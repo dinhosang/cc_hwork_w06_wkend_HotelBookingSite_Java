@@ -22,4 +22,8 @@ public class Guest {
         int copyWallet = this.wallet;
         return copyWallet;
     }
+
+    public void spendMoney(int amountSpent) {
+        this.wallet -= amountSpent;
+    }
 }

@@ -1,15 +1,17 @@
 ## Classes - with Properties / Methods
+##
 
-##Guest
+## Guest
 <!-- -- name [String] -->
 <!-- -- wallet [int] -->
---location [Room]
+\--location [Room]
 
 <!-- ~~getName() [String] -->
 <!-- ~~getWallet() [int] -->
-~~getLocation() [Room]
+<!-- ~~spendMoney(amountSpent) [void] -->
+\~~getLocation() [Room]
 
-##Room
+## Room
 <!-- -- capacity [int] -->
 <!-- -- occupants [ArrayList<Guest>] -->
 <!-- ~~ receiveGuest(guests) [void] -->
@@ -29,10 +31,9 @@ Conference Room
 
 Dining Room
 -- name [String]
-##
 
 
-##Hotel
+## Hotel
 -- rooms [ArrayList<Room>]
 ~~ checkIn(room, numberNight, guests) [void]
   - test capacity here
