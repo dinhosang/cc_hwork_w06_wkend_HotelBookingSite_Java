@@ -1,7 +1,5 @@
 package Location.HotelRooms.RentedRooms;
 
-import Location.HotelRooms.RentedRooms.RentedRoom;
-
 public class ConferenceRoom extends RentedRoom {
 
 

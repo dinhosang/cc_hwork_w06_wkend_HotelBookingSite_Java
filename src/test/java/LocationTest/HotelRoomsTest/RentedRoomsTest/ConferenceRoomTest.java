@@ -2,7 +2,6 @@ package LocationTest.HotelRoomsTest.RentedRoomsTest;
 
 import Location.HotelRooms.RentedRooms.ConferenceRoom;
 import org.junit.Before;
-import org.junit.Test;
 
 public class ConferenceRoomTest {
 
