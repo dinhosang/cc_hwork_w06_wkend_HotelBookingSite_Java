@@ -16,7 +16,7 @@ public class RoomTest {
 
     @Before
     public void before(){
-        room = new Room(2);
+        room = new Room("The Room", 2);
         guest1 = new Guest("Flavia", 20);
         guest2 = new Guest("Duncan", 40);
         guest3 = new Guest("Leira", 80);
@@ -45,6 +45,11 @@ public class RoomTest {
         room.releaseGuests(guest2, guest1);
         assertEquals(1, room.getOccupants().size());
         assertEquals(true, room.getOccupants().contains(guest3));
+    }
+
+    @Test
+    public void canGetName(){
+        assertEquals("The Room", room.getName());
     }
 
 }

@@ -1,7 +1,7 @@
-package LocationTest.HotelRoomsTest;
+package LocationTest.HotelRoomsTest.RentedRoomsTest;
 
-import Location.HotelRooms.BedType;
-import Location.HotelRooms.Bedroom;
+import Location.HotelRooms.RentedRooms.BedType;
+import Location.HotelRooms.RentedRooms.Bedroom;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,11 +24,6 @@ public class BedroomTest {
     @Test
     public void canGetBedroomCapacity(){
         assertEquals(1, bedroom.getCapacity());
-    }
-
-    @Test
-    public void canGetRate(){
-        assertEquals(5, bedroom.getRate());
     }
 
 }

@@ -1,6 +1,6 @@
-package LocationTest.HotelRoomsTest;
+package LocationTest.HotelRoomsTest.RentedRoomsTest;
 
-import Location.HotelRooms.BedType;
+import Location.HotelRooms.RentedRooms.BedType;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

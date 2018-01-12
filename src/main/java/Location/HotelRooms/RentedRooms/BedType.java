@@ -1,4 +1,4 @@
-package Location.HotelRooms;
+package Location.HotelRooms.RentedRooms;
 
 public enum BedType {
 

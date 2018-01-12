@@ -8,9 +8,11 @@ import java.util.Arrays;
 public class Room {
 
     protected int capacity;
+    protected String name;
     protected ArrayList<Guest> occupants;
 
-    public Room(int capacity) {
+    public Room(String name, int capacity) {
+        this.name = name;
         this.capacity = capacity;
         this.occupants = new ArrayList<>();
     }
@@ -31,5 +33,10 @@ public class Room {
     public int getCapacity() {
         int copyCapacity = this.capacity;
         return copyCapacity;
+    }
+
+    public String getName() {
+        String copyName = this.name;
+        return copyName;
     }
 }
