@@ -7,8 +7,8 @@ import java.util.Arrays;
 
 public class Room {
 
-    int capacity;
-    ArrayList<Guest> occupants;
+    protected int capacity;
+    protected ArrayList<Guest> occupants;
 
     public Room(int capacity) {
         this.capacity = capacity;
@@ -26,5 +26,10 @@ public class Room {
 
     public void releaseGuests(Guest... guests) {
         this.occupants.removeAll(Arrays.asList(guests));
+    }
+
+    public int getCapacity() {
+        int copyCapacity = this.capacity;
+        return copyCapacity;
     }
 }

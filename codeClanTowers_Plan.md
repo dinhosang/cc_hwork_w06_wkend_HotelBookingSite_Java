@@ -14,24 +14,26 @@
 ## Room
 <!-- -- capacity [int] -->
 <!-- -- occupants [ArrayList<Guest>] -->
+<!-- ~~ getCapacity() [int] -->
 <!-- ~~ receiveGuest(guests) [void] -->
 <!-- ~~ releaseGuest(guests) [void/Guest] - void -->
 
-## Room Subclass - with Properties / Methods
+##
+#Room Subclass - with Properties / Methods
 
-Bedroom
--- roomNumber [int]
+#Bedroom
+<!-- -- roomNumber [String] -->
 -- bedType [Enum]
 -- capacity [override - taken from bedType Enum]
 -- rate [int]
 
-Conference Room
+#Conference Room
 -- name [String]
 -- rate [int]
 
-Dining Room
+#Dining Room
 -- name [String]
-
+##
 
 ## Hotel
 -- rooms [ArrayList<Room>]

@@ -28,6 +28,11 @@ public class RoomTest {
     }
 
     @Test
+    public void canGetRoomCapacity(){
+        assertEquals(2, room.getCapacity());
+    }
+
+    @Test
     public void canReceiveGuests(){
         room.receiveGuests(guest1, guest2);
         assertEquals(2, room.getOccupants().size());

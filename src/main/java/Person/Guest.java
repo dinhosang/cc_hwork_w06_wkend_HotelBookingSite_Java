@@ -4,9 +4,9 @@ import Location.Room;
 
 public class Guest {
 
-    String name;
-    int wallet;
-    Room location;
+    private String name;
+    private int wallet;
+    private Room location;
 
     public Guest(String name, int wallet){
         this.name = name;
