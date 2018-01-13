@@ -1,8 +1,8 @@
 package Location.HotelRooms.RentedRooms;
 
-import Location.Room;
+import Location.Location;
 
-public class RentedRoom extends Room {
+public class RentedRoom extends Location {
 
     protected int rate;
 

@@ -1,8 +1,8 @@
 package Location.HotelRooms;
 
-import Location.Room;
+import Location.Location;
 
-public class DiningRoom extends Room {
+public class DiningRoom extends Location {
 
     public DiningRoom(String name, int capacity) {
         super(name, capacity);

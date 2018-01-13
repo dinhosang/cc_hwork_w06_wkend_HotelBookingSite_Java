@@ -5,7 +5,7 @@ import org.junit.Before;
 
 public class DiningRoomTest {
 
-    DiningRoom diningRoom;
+    private DiningRoom diningRoom;
 
     @Before
     public void before(){

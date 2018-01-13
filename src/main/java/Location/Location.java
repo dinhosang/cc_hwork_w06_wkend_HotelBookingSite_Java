@@ -5,13 +5,13 @@ import Person.Guest;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Room {
+public class Location {
 
     protected int capacity;
     protected String name;
     protected ArrayList<Guest> occupants;
 
-    public Room(String name, int capacity) {
+    public Location(String name, int capacity) {
         this.name = name;
         this.capacity = capacity;
         this.occupants = new ArrayList<>();

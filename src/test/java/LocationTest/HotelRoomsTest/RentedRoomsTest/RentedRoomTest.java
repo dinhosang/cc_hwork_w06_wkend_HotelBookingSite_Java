@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 public class RentedRoomTest {
 
-   RentedRoom room;
+   private RentedRoom room;
 
    @Before
     public void before(){

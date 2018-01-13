@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class BedroomTest {
 
-    Bedroom bedroom;
+    private Bedroom bedroom;
 
     @Before
     public void before(){

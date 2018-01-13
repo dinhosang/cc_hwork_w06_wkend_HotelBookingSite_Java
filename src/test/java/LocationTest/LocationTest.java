@@ -1,22 +1,22 @@
 package LocationTest;
 
-import Location.Room;
+import Location.Location;
 import Person.Guest;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class RoomTest {
+public class LocationTest {
 
-    Room room;
-    Guest guest1;
-    Guest guest2;
-    Guest guest3;
+    private Location room;
+    private Guest guest1;
+    private Guest guest2;
+    private Guest guest3;
 
     @Before
     public void before(){
-        room = new Room("The Room", 2);
+        room = new Location("The Room", 2);
         guest1 = new Guest("Flavia", 20);
         guest2 = new Guest("Duncan", 40);
         guest3 = new Guest("Leira", 80);

@@ -1,12 +1,12 @@
 package Person;
 
-import Location.Room;
+import Location.Location;
 
 public class Guest {
 
     private String name;
     private int wallet;
-    private Room location;
+    private Location location;
 
     public Guest(String name, int wallet){
         this.name = name;
