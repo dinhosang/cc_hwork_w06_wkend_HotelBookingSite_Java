@@ -33,7 +33,7 @@ public class HotelTest {
         diningRoom = new DiningRoom("Fine Cuisine", 40);
 
 
-        hotel = new Hotel("California", 20);
+        hotel = new Hotel("Code el California", 20);
     }
 
     @Test

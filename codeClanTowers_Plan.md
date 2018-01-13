@@ -23,20 +23,27 @@
 
 #Bedroom
 <!-- -- roomNumber [String] -->
--- bedType [Enum]
--- capacity [override - taken from bedType Enum]
--- rate [int]
+<!-- -- bedType [Enum] -->
+<!-- -- capacity [override - taken from bedType Enum] -->
+<!-- -- rate [int] -->
+<!-- ~~ getRoomNumber() [String] -->
+<!-- ~~ getRate() -->
 
 #Conference Room
--- name [String]
--- rate [int]
+<!-- -- name [String] -->
+<!-- -- rate [int] -->
 
 #Dining Room
--- name [String]
+<!-- -- name [String] -->
 ##
 
 ## Hotel
--- rooms [ArrayList<Room>]
+<!-- -- rooms hashMap -->
+<!-- ~~ addRooms(Location... rooms) -->
+<!-- ~~ removeRooms(Location.. rooms) -->
+
+-- roomsReserved [HashMap]
+
 ~~ checkIn(room, numberNight, guests) [void]
   - test capacity here
 ~~ chargeGuest(room, guests)
