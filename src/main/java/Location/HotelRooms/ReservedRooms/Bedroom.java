@@ -1,9 +1,7 @@
-package Location.HotelRooms.RentedRooms;
+package Location.HotelRooms.ReservedRooms;
 
 
-import Location.HotelRooms.RoomType;
-
-public class Bedroom extends RentedRoom {
+public class Bedroom extends ReservedRoom {
 
     public Bedroom(String roomNumber, BedType bedType, int rate){
         super(roomNumber, bedType.getTypeCapacity(), rate);

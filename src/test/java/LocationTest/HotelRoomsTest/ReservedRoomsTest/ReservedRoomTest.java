@@ -1,18 +1,18 @@
-package LocationTest.HotelRoomsTest.RentedRoomsTest;
+package LocationTest.HotelRoomsTest.ReservedRoomsTest;
 
-import Location.HotelRooms.RentedRooms.RentedRoom;
+import Location.HotelRooms.ReservedRooms.ReservedRoom;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class RentedRoomTest {
+public class ReservedRoomTest {
 
-   private RentedRoom room;
+   private ReservedRoom room;
 
    @Before
     public void before(){
-       room = new RentedRoom("Rented Room",2, 8);
+       room = new ReservedRoom("Rented Room",2, 8);
    }
 
     @Test

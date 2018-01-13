@@ -1,12 +1,17 @@
 package LocationTest.HotelTest;
 
+import Location.Location;
 import Location.Hotel.Hotel;
 import Location.HotelRooms.DiningRoom;
-import Location.HotelRooms.RentedRooms.BedType;
-import Location.HotelRooms.RentedRooms.Bedroom;
-import Location.HotelRooms.RentedRooms.ConferenceRoom;
+import Location.HotelRooms.ReservedRooms.BedType;
+import Location.HotelRooms.ReservedRooms.Bedroom;
+import Location.HotelRooms.ReservedRooms.ConferenceRoom;
+import Person.Guest;
+import Reservation.ReservationResult;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,6 +24,11 @@ public class HotelTest {
     private ConferenceRoom conferenceRoomSmall;
     private ConferenceRoom conferenceRoomBig;
     private DiningRoom diningRoom;
+    private Guest guest1;
+    private Guest guest2;
+    private LocalDate startDate;
+    private LocalDate endDate;
+
 
     @Before
     public void before(){
@@ -34,6 +44,12 @@ public class HotelTest {
 
 
         hotel = new Hotel("Code el California", 20);
+
+        guest1 = new Guest("Liara", 100);
+        guest2 = new Guest("Jacob", 85);
+
+        startDate = LocalDate.of(2018,6,28);
+        endDate = LocalDate.of(2018, 7, 4);
     }
 
     @Test
@@ -58,4 +74,12 @@ public class HotelTest {
         assertEquals(false, hotel.containsRoom(bedroom3));
         assertEquals(54, hotel.getCapacity());
     }
+
+    @Test
+    public void canReceiveReservationRequestSuccess(){
+        hotel.addRooms(bedroom3);
+
+        assertEquals(ReservationResult.SUCCESS, hotel.receiveReservationRequest(bedroom3, startDate, endDate, guest1, guest1, guest2));
+    }
+
 }

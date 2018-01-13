@@ -1,6 +1,6 @@
-package Location.HotelRooms.RentedRooms;
+package Location.HotelRooms.ReservedRooms;
 
-public class ConferenceRoom extends RentedRoom {
+public class ConferenceRoom extends ReservedRoom {
 
 
     public ConferenceRoom(String name, int capacity, int hourlyRatePerPerson) {

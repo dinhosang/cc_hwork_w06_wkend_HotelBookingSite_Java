@@ -1,12 +1,12 @@
-package Location.HotelRooms.RentedRooms;
+package Location.HotelRooms.ReservedRooms;
 
 import Location.Location;
 
-public class RentedRoom extends Location {
+public class ReservedRoom extends Location {
 
     protected int rate;
 
-    public RentedRoom(String name, int capacity, int rate){
+    public ReservedRoom(String name, int capacity, int rate){
         super(name, capacity);
         this.rate = rate;
     }

@@ -1,7 +1,7 @@
-package LocationTest.HotelRoomsTest.RentedRoomsTest;
+package LocationTest.HotelRoomsTest.ReservedRoomsTest;
 
-import Location.HotelRooms.RentedRooms.BedType;
-import Location.HotelRooms.RentedRooms.Bedroom;
+import Location.HotelRooms.ReservedRooms.BedType;
+import Location.HotelRooms.ReservedRooms.Bedroom;
 import org.junit.Before;
 import org.junit.Test;
 

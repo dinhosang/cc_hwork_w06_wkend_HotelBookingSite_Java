@@ -1,6 +1,6 @@
-package LocationTest.HotelRoomsTest.RentedRoomsTest;
+package LocationTest.HotelRoomsTest.ReservedRoomsTest;
 
-import Location.HotelRooms.RentedRooms.ConferenceRoom;
+import Location.HotelRooms.ReservedRooms.ConferenceRoom;
 import org.junit.Before;
 
 public class ConferenceRoomTest {

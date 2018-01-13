@@ -1,20 +1,28 @@
 package Location.Hotel;
 
 import Location.HotelRooms.DiningRoom;
-import Location.HotelRooms.RentedRooms.Bedroom;
-import Location.HotelRooms.RentedRooms.ConferenceRoom;
+import Location.HotelRooms.ReservedRooms.Bedroom;
+import Location.HotelRooms.ReservedRooms.ConferenceRoom;
+import Location.HotelRooms.ReservedRooms.ReservedRoom;
 import Location.HotelRooms.RoomType;
 import Location.Location;
+import Person.Guest;
+import Reservation.BookingCalendar;
+import Reservation.ReservationResult;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Hotel extends Location {
 
     private HashMap<RoomType, ArrayList> rooms;
+    private BookingCalendar calendar;
 
     public Hotel(String name, int foyerCapacity){
         super(name, foyerCapacity);
         createHashMapOfRooms();
+        this.calendar = new BookingCalendar();
     }
 
 
@@ -90,7 +98,48 @@ public class Hotel extends Location {
         return this.capacity + roomsCapacity;
     }
 
+    public ReservationResult receiveReservationRequest(Location room, LocalDate startDate, LocalDate endDate, Guest guestToCharge, Guest... guests) {
 
+        long usageLength = ChronoUnit.DAYS.between(startDate, endDate);
+
+
+        if (!ReservedRoom.class.isInstance(room)) {
+            return ReservationResult.FAILEDWRONGROOMTYPE;
+        }
+
+
+        ReservedRoom chosenRoom = (ReservedRoom) room;
+        if(chosenRoom.getCapacity() < guests.length){
+            return ReservationResult.FAILEDCAPACITY;
+        }
+
+
+        Boolean canPay = checkGuestCanPay(guestToCharge, chosenRoom, usageLength);
+        if(!canPay){
+            return ReservationResult.FAILEDNOTENOUGHFUNDS;
+        }
+
+
+        ReservationResult resultOfAttemptToReserve = calendar.addBooking(chosenRoom, startDate, endDate, guests);
+
+
+        if(resultOfAttemptToReserve.equals(ReservationResult.FAILEDALREADYRESERVED)){
+            return resultOfAttemptToReserve;
+        }
+
+
+        chargeGuest(guestToCharge, chosenRoom, usageLength);
+        return resultOfAttemptToReserve;
+    }
+
+
+
+    private void chargeGuest(Guest guest, ReservedRoom room, long usageLength) {
+        long rate = room.getRate();
+        long totalPrice = rate * usageLength;
+
+        guest.spendMoney(totalPrice);
+    }
 
     private void createHashMapOfRooms(){
         ArrayList<Bedroom> bedrooms = new ArrayList<>();
@@ -119,4 +168,19 @@ public class Hotel extends Location {
         }
         return arrayForRoomType;
     }
+
+    private Boolean checkGuestCanPay(Guest guest, ReservedRoom room, long usageLength) {
+        long guestWallet = guest.getWallet();
+        long rate = room.getRate();
+
+        long totalPrice = rate * usageLength;
+
+        if(!(guestWallet >= totalPrice)){
+            return false;
+        }
+
+        return true;
+    }
+
+
 }
