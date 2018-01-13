@@ -48,4 +48,14 @@ public class HotelTest {
         hotel.addRooms(bedroom1, bedroom2, conferenceRoomSmall);
         assertEquals(34, hotel.getCapacity());
     }
+
+    @Test
+    public void canRemoveRooms(){
+        hotel.addRooms(bedroom1, conferenceRoomSmall, conferenceRoomBig, bedroom3, bedroom2);
+        hotel.removeRooms(bedroom3, conferenceRoomSmall);
+        assertEquals(3, hotel.numberOfRooms());
+        assertEquals(false, hotel.containsRoom(conferenceRoomSmall));
+        assertEquals(false, hotel.containsRoom(bedroom3));
+        assertEquals(54, hotel.getCapacity());
+    }
 }

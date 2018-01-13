@@ -43,20 +43,34 @@ public class Hotel extends Location {
         }
     }
 
+    public void removeRooms(Location... rooms){
+        for(Location room: rooms){
+            String roomTypeEnumAsAString = room.getClass().getSimpleName();
+
+            ArrayList arrayRoomsForType = findCorrectArrayForRoomType(room);
+            arrayRoomsForType.remove(room);
+
+            this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
+        }
+    }
+
+
     public int numberOfRooms() {
         int numberOfRooms = 0;
 
         Set keys = this.rooms.keySet();
 
         for(Object type: keys){
-            System.out.println(this.rooms.get(type).get(0).getClass());
             numberOfRooms += this.rooms.get(type).size();
-
+//            if(!this.rooms.get(type).isEmpty()) {
+//                // if statement is need as otherwise it fails
+//                // if the arrayList is empty when trying to get(0)
+//                System.out.println(this.rooms.get(type).get(0).getClass());
+//            }
         }
 
         return numberOfRooms;
     }
-
 
     public boolean containsRoom(Location room) {
         ArrayList arrayForRoomType = findCorrectArrayForRoomType(room);
@@ -75,6 +89,8 @@ public class Hotel extends Location {
         }
         return this.capacity + roomsCapacity;
     }
+
+
 
     private void createHashMapOfRooms(){
         ArrayList<Bedroom> bedrooms = new ArrayList<>();
