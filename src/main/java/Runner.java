@@ -8,8 +8,7 @@ public class Runner {
         while(true){
             TravelInCode site = new TravelInCode();
             RunnerHelper helper = new RunnerHelper(site);
-            helper.userLoginQuery();
-            helper.mainMenu();
+            helper.welcomeScreen();
         }
     }
 }

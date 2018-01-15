@@ -1,6 +1,11 @@
 package RunnerAssistance;
 
 public enum FinalCheckUserCreationResult {
-    RESTART,
-    COMPLETED;
+
+    USER,
+    FIRST,
+    LAST,
+    BALANCE,
+    NOISSUE;
+
 }

@@ -1,8 +1,8 @@
 package RunnerAssistance;
 
 import Person.Guest;
+import Person.ProtoGuest;
 import WebSite.Site;
-import com.sun.xml.internal.xsom.impl.Ref;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,96 +12,114 @@ public class RunnerHelper {
     private Site site;
     private ArrayList<String> keywords;
 
-    public RunnerHelper(Site site){
+    public RunnerHelper(Site site) {
         this.site = site;
         this.keywords = new ArrayList<>(Arrays.asList("yes", "no", "y", "n", "user", "last", "first", "balance", "user name", "username", "first name", "last name", "starting balance", "login", "finish"));
     }
 
-    public void userLoginQuery() {
-        boolean needtoReturnToStart = true;
-        LoginQueryResult loginResult;
-        String userName = new String();
-
-        String finalAccountName = new String();
-        Guest activeAccount = null;
+    public void welcomeScreen() {
+        TerminalHelper.flushMacScreen();
 
         System.out.println(String.format("Welcome to %s, the hotel booking site.\n", this.site.getSiteName()));
-        System.out.println("This site uses '' around keywords to signify that they can be used as input.\n Please do not include the '' when typing.\n\n");
+        System.out.println("This site uses '' around keywords to signify that they can be used as input.");
+        System.out.println("Please do not include the '' when typing.\n\n");
         System.out.println("At any time you may type 'quit' to leave the site\n\n");
 
-        while(needtoReturnToStart) {
-            loginResult = LoginQueryResult.NOTCOMPLETEDLOGIN;
-            while (loginResult.equals(LoginQueryResult.NOTCOMPLETEDLOGIN)) {
-                System.out.println("Please enter your username to continue, or type 'new' to create a new account");
-                System.out.println(String.format("\n[Accounts already on System: %s]", site.getUserNamesAsString()));
-                userName = TerminalHelper.getInput();
-                finalAccountName = userName;
-                TerminalHelper.flushMacScreen();
-
-                if (TerminalHelper.stringIsEmpty(userName)) {
-                    System.out.println("Please enter a user name, or type 'new' to create a new account\n\n");
-                    continue;
-                }
-                if (userName.equals("new")) {
-                    loginResult = LoginQueryResult.NEWUSER;
-                    break;
-                }
-
-                if (userName.equals("login")){
-                    System.out.println("Login is a reserved word, please try another user name\n\n");
-                    continue;
-                }
-
-                if (!TerminalHelper.stringIsAlphaNumeric(userName)){
-                    System.out.println("Please use only letters of the English alphabet, and whole numbers.\n\n");
-                    continue;
-                }
-
-                if (this.keywords.contains(userName)){
-                    System.out.println("You have chosen a reserved word, please enter another user name\n\n");
-                    continue;
-                }
-
-                boolean isActiveUser = this.site.checkIfHaveAccount(userName);
-
-                if (!isActiveUser) {
-                    System.out.println("This user name has not been found");
-                    System.out.println("Would you like to create a 'new' account, or try to 'login' again?");
-                    while (true) {
-                        String userChoice = TerminalHelper.getInput();
-                        TerminalHelper.flushMacScreen();
-                        if (userChoice.equals("new")) {
-                            loginResult = LoginQueryResult.NEWUSER;
-                            break;
-                        }
-                        if (userChoice.equals("login")) {
-                            break;
-                        }
-                        System.out.println("Please enter 'new' to create a new account, or 'login' to try again");
-                    }
-                } else if (isActiveUser) {
-                    loginResult = LoginQueryResult.ACTIVEUSER;
-                }
-            }
-
-            if (loginResult.equals(LoginQueryResult.NEWUSER)) {
-                Boolean succesfullyAdded = addUser(userName);
-                if (succesfullyAdded == true) {
-                    needtoReturnToStart = false;
-                }
-            }
-            if (loginResult.equals(LoginQueryResult.ACTIVEUSER)) {
-                activeAccount = this.site.findUserAccount(finalAccountName);
-                needtoReturnToStart = false;
-                this.site.enterCurrentUser(activeAccount);
-            }
-        }
-        TerminalHelper.flushMacScreen();
+        userLoginQuery();
     }
 
+    private void userLoginQuery() {
 
+        String userName;
 
-    public void mainMenu() {
+        System.out.println("Please enter your username to continue, or type 'new' to create a new account");
+        System.out.println(String.format("\n[Accounts already on System: %s]", site.getUserNamesAsString()));
+        userName = TerminalHelper.getInput();
+
+        if (TerminalHelper.stringIsEmpty(userName)) {
+
+            TerminalHelper.flushMacScreen();
+            System.out.println("Please enter a user name, or type 'new' to create a new account\n\n");
+
+            userLoginQuery();
+
+        } else if (this.keywords.contains(userName)) {
+
+            TerminalHelper.flushMacScreen();
+            System.out.println("You have entered a reserved word, please try another user name\n\n");
+
+            userLoginQuery();
+
+        } else if (!TerminalHelper.stringIsAlphaNumeric(userName)) {
+
+            TerminalHelper.flushMacScreen();
+            System.out.println("Please use only letters of the English alphabet, and whole numbers.\n\n");
+
+            userLoginQuery();
+
+        } else if (userName.equals("new")) {
+
+            TerminalHelper.flushMacScreen();
+
+            ProtoGuest newAccount = new ProtoGuest();
+
+            getAcceptableUserName(newAccount);
+
+        }
+
+        TerminalHelper.flushMacScreen();
+        checkActiveUser(userName);
+    }
+
+    private void checkActiveUser(String userName) {
+
+        Guest activeAccount;
+        boolean isActiveUser = this.site.checkIfHaveAccount(userName);
+
+        if (!isActiveUser) {
+
+            System.out.println(String.format("The user name '%s' has not been found", userName));
+            System.out.println("Would you like to create a 'new' account, or try to 'login' again?");
+
+            String userChoice = TerminalHelper.getInput();
+
+            if (userChoice.equals("new")) {
+
+                TerminalHelper.flushMacScreen();
+
+                ProtoGuest newAccount = new ProtoGuest();
+
+                newAccount.setUserName(userChoice);
+
+                getAcceptableUserNameCheck(newAccount);
+
+            } else if (userChoice.equals("login")) {
+
+                TerminalHelper.flushMacScreen();
+
+                userLoginQuery();
+
+            } else {
+
+                TerminalHelper.flushMacScreen();
+
+                System.out.println("Please enter 'new' to create a new account, or 'login' to try again");
+
+                checkActiveUser(userName);
+            }
+        } else {
+
+            activeAccount = this.site.findUserAccount(userName);
+            this.site.enterCurrentUser(activeAccount);
+
+            TerminalHelper.flushMacScreen();
+
+            mainMenu();
+
+        }
+    }
+
+    private void mainMenu() {
 
         Guest user = this.site.getCurrentUser();
 
@@ -118,14 +136,14 @@ public class RunnerHelper {
 
         String userChoice = TerminalHelper.getInput();
 
-        if (!allowedOptions.contains(userChoice)){
+        if (!allowedOptions.contains(userChoice)) {
             TerminalHelper.flushMacScreen();
             System.out.println("Please select one of the given options\n\n");
             mainMenu();
-        } else if (userChoice.equals("1") || userChoice.equals("account")){
+        } else if (userChoice.equals("1") || userChoice.equals("account")) {
             TerminalHelper.flushMacScreen();
             viewActiveAccountDetails();
-        } else if (userChoice.equals("2") || userChoice.equals("booking")){
+        } else if (userChoice.equals("2") || userChoice.equals("booking")) {
             TerminalHelper.flushMacScreen();
             viewActiveAccountBookings();
         } else if (userChoice.equals("3") || userChoice.equals("new")) {
@@ -153,14 +171,14 @@ public class RunnerHelper {
 
         String userChoice = TerminalHelper.getInput();
 
-        if (!allowedOptions.contains(userChoice)){
+        if (!allowedOptions.contains(userChoice)) {
             TerminalHelper.flushMacScreen();
             System.out.println("Please select one of the given options\n\n");
             viewActiveAccountBookings();
-        } else if (userChoice.equals("1") || userChoice.equals("active")){
+        } else if (userChoice.equals("1") || userChoice.equals("active")) {
             TerminalHelper.flushMacScreen();
 //            viewActiveAccountActiveBookings();
-        } else if (userChoice.equals("2") || userChoice.equals("historic")){
+        } else if (userChoice.equals("2") || userChoice.equals("historic")) {
             TerminalHelper.flushMacScreen();
 //            viewActiveAccountHistoricBookings();
         } else if (userChoice.equals("3") || userChoice.equals("return")) {
@@ -194,14 +212,14 @@ public class RunnerHelper {
 
         String userChoice = TerminalHelper.getInput();
 
-        if (!allowedOptions.contains(userChoice)){
+        if (!allowedOptions.contains(userChoice)) {
             TerminalHelper.flushMacScreen();
             System.out.println("Please select one of the given options\n\n");
             viewActiveAccountDetails();
-        } else if (userChoice.equals("1") || userChoice.equals("edit")){
+        } else if (userChoice.equals("1") || userChoice.equals("edit")) {
             TerminalHelper.flushMacScreen();
             editActiveAccountDetails();
-        } else if (userChoice.equals("2") || userChoice.equals("transfer")){
+        } else if (userChoice.equals("2") || userChoice.equals("transfer")) {
             TerminalHelper.flushMacScreen();
             addFundsToActiveAccountWallet();
         } else if (userChoice.equals("3") || userChoice.equals("return")) {
@@ -227,7 +245,7 @@ public class RunnerHelper {
 
         String userChoice = TerminalHelper.getInput();
 
-        if (userChoice.equals("1") || userChoice.equals("return")){
+        if (userChoice.equals("1") || userChoice.equals("return")) {
             TerminalHelper.flushMacScreen();
             viewActiveAccountDetails();
         } else if (userChoice.equals("logout")) {
@@ -236,7 +254,7 @@ public class RunnerHelper {
             userLoginQuery();
         }
 
-        if (!TerminalHelper.stringIsNumeric(userChoice)){
+        if (!TerminalHelper.stringIsNumeric(userChoice)) {
             TerminalHelper.flushMacScreen();
             System.out.println("Please use only whole numbers");
             System.out.println("-----------------------------\n\n");
@@ -269,14 +287,14 @@ public class RunnerHelper {
 
         String userChoice = TerminalHelper.getInput();
 
-        if (!allowedOptions.contains(userChoice)){
+        if (!allowedOptions.contains(userChoice)) {
             TerminalHelper.flushMacScreen();
             System.out.println("Please select one of the given options\n\n");
             viewActiveAccountDetails();
-        } else if (userChoice.equals("1") || userChoice.equals("first")){
+        } else if (userChoice.equals("1") || userChoice.equals("first")) {
             TerminalHelper.flushMacScreen();
             editActiveAccountFirstName();
-        } else if (userChoice.equals("2") || userChoice.equals("last")){
+        } else if (userChoice.equals("2") || userChoice.equals("last")) {
             TerminalHelper.flushMacScreen();
             editActiveAccountLastName();
         } else if (userChoice.equals("3") || userChoice.equals("return")) {
@@ -302,7 +320,7 @@ public class RunnerHelper {
 
         String userChoice = TerminalHelper.getInput();
 
-        if (userChoice.equals("1") || userChoice.equals("return")){
+        if (userChoice.equals("1") || userChoice.equals("return")) {
             TerminalHelper.flushMacScreen();
             editActiveAccountDetails();
         } else if (userChoice.equals("logout")) {
@@ -311,7 +329,7 @@ public class RunnerHelper {
             userLoginQuery();
         }
 
-        if (!TerminalHelper.stringIsAlpha(userChoice)){
+        if (!TerminalHelper.stringIsAlpha(userChoice)) {
             TerminalHelper.flushMacScreen();
             System.out.println("Please only use letters of the English alphabet");
             System.out.println("-----------------------------------------------\n\n");
@@ -337,7 +355,7 @@ public class RunnerHelper {
 
         String userChoice = TerminalHelper.getInput();
 
-        if (userChoice.equals("1") || userChoice.equals("return")){
+        if (userChoice.equals("1") || userChoice.equals("return")) {
             TerminalHelper.flushMacScreen();
             editActiveAccountDetails();
         } else if (userChoice.equals("logout")) {
@@ -346,7 +364,7 @@ public class RunnerHelper {
             userLoginQuery();
         }
 
-        if (!TerminalHelper.stringIsAlpha(userChoice)){
+        if (!TerminalHelper.stringIsAlpha(userChoice)) {
             TerminalHelper.flushMacScreen();
             System.out.println("Please only use letters of the English alphabet");
             System.out.println("-----------------------------------------------\n\n");
@@ -359,400 +377,478 @@ public class RunnerHelper {
         }
     }
 
+    private void getAcceptableUserName(ProtoGuest newAccount) {
 
-    private Boolean addUser(String attemptedUserName) {
-        String userName = attemptedUserName;
-        String firstName = new String();
-        String lastName = new String();
-        Integer startingBalance = 0;
-        Boolean finishedProcess = false;
-        Boolean returnToLogin = false;
+        String firstName = newAccount.getFirstName();
+        String lastName = newAccount.getLastName();
+        Integer startingBalance = newAccount.getStartingBalance();
 
-        while(!finishedProcess) {
-
-            userName = getAcceptableUserName(firstName, lastName, startingBalance);
-            if(userName.isEmpty()){
-                returnToLogin = true;
-                finishedProcess = true;
-                break;
-            }
-
-            firstName = getAcceptableFirstName(userName, lastName, startingBalance);
-            if(firstName.isEmpty()){
-                returnToLogin = true;
-                finishedProcess = true;
-                break;
-            }
-
-            lastName = getAcceptableLastName(userName, firstName, startingBalance);
-            if(lastName.isEmpty()){
-                returnToLogin = true;
-                finishedProcess = true;
-                break;
-            }
-
-            startingBalance = getStartingBalance(userName, firstName, lastName);
-            if(startingBalance == null){
-                returnToLogin = true;
-                finishedProcess = true;
-                break;
-            }
-
-            FinalCheckUserCreationResult resultOfFinalCheck = makeFinalCheck(userName, firstName, lastName, startingBalance);
-            if(resultOfFinalCheck.equals(FinalCheckUserCreationResult.RESTART)) {
-                returnToLogin = true;
-            }
-            finishedProcess = true;
-        }
-
-        if(returnToLogin){
-            return false;
-        }
-        return true;
-    }
-
-    private FinalCheckUserCreationResult makeFinalCheck(String userName, String firstName, String lastName, Integer startingBalance) {
-
-        boolean finalCheckOngoing = true;
-
-        while(finalCheckOngoing) {
-            System.out.println(String.format("Chosen User Name: %s", userName));
+        if (!firstName.isEmpty()) {
             System.out.println(String.format("Chosen First Name: %s", firstName));
+        }
+        if (!lastName.isEmpty()) {
             System.out.println(String.format("Chosen Last Name: %s", lastName));
+        } else if (!lastName.isEmpty() && startingBalance == 0) {
+            System.out.println(String.format("Chosen Last Name: %s\n", lastName));
+        }
+        if (startingBalance != 0) {
+            System.out.println(String.format("Chosen Starting Balance: %d\n", startingBalance));
+        }
+
+        System.out.print("Please enter your desired user name, or enter 'login' to cancel new account creation and return to login screen: ");
+
+        String userChoice = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+        if (userChoice.equals("login")) {
+
+            userLoginQuery();
+
+        } else if (!TerminalHelper.stringIsAlphaNumeric(userChoice)) {
+
+            System.out.println("Apologies, but due to current system constraints please use only numbers and letters of the English alphabet\n\n");
+
+            getAcceptableUserName(newAccount);
+
+        } else if (site.checkIfHaveAccount(userChoice)) {
+
+            System.out.println("The user name entered already exists on our system\n\n");
+
+            getAcceptableUserName(newAccount);
+
+        } else if (this.keywords.contains(userChoice)) {
+
+            System.out.println("You have chosen a reserved word, please enter another user name\n\n");
+
+            getAcceptableUserName(newAccount);
+
+        }
+
+        newAccount.setUserName(userChoice);
+        getAcceptableUserNameCheck(newAccount);
+    }
+
+    private void getAcceptableUserNameCheck(ProtoGuest newAccount) {
+
+
+        String userName = newAccount.getUserName();
+
+        FinalCheckUserCreationResult finalCheck = newAccount.getFinalCheck();
+
+
+        System.out.print(String.format("You have entered '%s' as your user name.\nIs this correct? 'Yes' / 'No': ", userName));
+        String response;
+        response = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+        if (response.equals("login")) {
+
+            userLoginQuery();
+
+        } else if (response.equals("yes") || response.equals("y")) {
+
+            if (!finalCheck.equals(FinalCheckUserCreationResult.NOISSUE)) {
+
+                makeFinalCheckEdit(newAccount);
+            }
+
+            getAcceptableFirstName(newAccount);
+
+        } else if (response.equals("no") || response.equals("n")) {
+
+            newAccount.setUserName("");
+
+            getAcceptableUserName(newAccount);
+
+        } else {
+
+            System.out.println("Please enter 'Yes' or 'No', or enter 'login' to return to the login screen\n");
+
+        }
+    }
+
+    private void getAcceptableFirstName(ProtoGuest newAccount) {
+
+
+        String userName = newAccount.getUserName();
+        String firstName;
+        String lastName = newAccount.getLastName();
+        Integer startingBalance = newAccount.getStartingBalance();
+
+
+        if (!userName.isEmpty()) {
+            System.out.println(String.format("Chosen User Name: %s", userName));
+        }
+        if (!lastName.isEmpty()) {
+            System.out.println(String.format("Chosen Last Name: %s", lastName));
+        }
+        if (startingBalance != 0) {
             System.out.println(String.format("Chosen Starting Balance: %d", startingBalance));
-
-            System.out.println("\nAre all the above fields correct? 'Yes' / 'No', or 'login' to restart from login screen: ");
-            String response = TerminalHelper.getInput();
-            TerminalHelper.flushMacScreen();
-
-            if(response.equals("yes") || response.equals("y")){
-                finalCheckOngoing = false;
-                break;
-            } else if(response.equals("no") || response.equals("n")){
-                boolean furtherChangesRequired = true;
-                while (furtherChangesRequired) {
-                    boolean changeMade = false;
-                    System.out.println("Please enter the field you wish to change first, or 'login' to restart");
-                    System.out.println("Enter 'finish' to return to the final step, or 'login' to cancel and return to the login screen");
-                    System.out.print("['User' name, 'First' name, 'Last' name, Starting 'Balance']: ");
-                    String changeRequired = TerminalHelper.getInput();
-                    TerminalHelper.flushMacScreen();
-
-                    if(changeRequired.equals("finish")){
-                        System.out.println(String.format("Payment received from bank account for starting Balance, account wallet credited: $%d.\n", startingBalance));
-                        furtherChangesRequired = false;
-                        break;
-                    }
-
-                    if(changeRequired.equals("login")){
-                        return FinalCheckUserCreationResult.RESTART;
-                    }
-
-                    if(changeRequired.equals("user") || changeRequired.equals("user name")){
-                        String resultQuery = getAcceptableUserName(firstName, lastName, startingBalance);
-                        if (resultQuery == null) {
-                            return FinalCheckUserCreationResult.RESTART;
-                        }
-                        userName = resultQuery;
-                        changeMade = true;
-                    }
-
-                    if(changeRequired.equals("first") || changeRequired.equals("first name")){
-                        String resultQuery = getAcceptableFirstName(userName, lastName, startingBalance);
-                        if (resultQuery == null) {
-                            return FinalCheckUserCreationResult.RESTART;
-                        }
-                        firstName = resultQuery;
-                        changeMade = true;
-                    }
-
-                    if(changeRequired.equals("last") || changeRequired.equals("last name")){
-                        String resultQuery = getAcceptableLastName(userName, firstName, startingBalance);
-                        if (resultQuery == null) {
-                            return FinalCheckUserCreationResult.RESTART;
-                        }
-                        lastName = resultQuery;
-                        changeMade = true;
-                    }
-
-                    if(changeRequired.equals("balance") || changeRequired.equals("starting balance")){
-                        Integer resultQuery = getStartingBalance(userName, firstName, lastName);
-                        if (resultQuery == null) {
-                            return FinalCheckUserCreationResult.RESTART;
-                        }
-                        startingBalance = resultQuery;
-                        changeMade = true;
-                    }
-
-
-                    if(furtherChangesRequired && !changeMade){
-                        System.out.println("Please enter only the given options");
-                    }
-                }
-            } else if(response.contains("login")){
-                return FinalCheckUserCreationResult.RESTART;
-            } else {
-                System.out.println("Please enter only 'yes', 'no', or 'login'");
-                break;
-            }
         }
 
-        this.site.addUser(userName, firstName, lastName, startingBalance);
-        Guest activeAccount = this.site.findUserAccount(userName);
-        this.site.enterCurrentUser(activeAccount);
 
-        return FinalCheckUserCreationResult.COMPLETED;
-    }
+        System.out.print("\nPlease enter your first name, or enter 'login' to cancel new account creation and return to login screen: ");
 
-    private String getAcceptableUserName(String firstName, String lastName, Integer startingBalance){
-        String userName = new String();
-        boolean acceptableUserName = false;
+        firstName = TerminalHelper.getInput();
 
-        while(!acceptableUserName){
-            if(!firstName.isEmpty()) {
-                System.out.println(String.format("Chosen First Name: %s", firstName));
-            }
-            if(!lastName.isEmpty()){
-                System.out.println(String.format("Chosen Last Name: %s", lastName));
-            } else if (!lastName.isEmpty() && startingBalance == 0){
-                System.out.println(String.format("Chosen Last Name: %s\n", lastName));
-            }
-            if(startingBalance != 0){
-                System.out.println(String.format("Chosen Starting Balance: %d\n", startingBalance));
-            }
+        TerminalHelper.flushMacScreen();
 
-            System.out.print("Please enter your desired user name, or enter 'login' to cancel new account creation and return to login screen: ");
-            userName = TerminalHelper.getInput();
-            TerminalHelper.flushMacScreen();
 
-            if(userName.equals("login")){
-                return "";
-            } else if(!TerminalHelper.stringIsAlphaNumeric(userName)){
-                System.out.println("Apologies, but due to current system constraints please use only numbers and letters of the English alphabet\n\n");
-                continue;
-            } else if(site.checkIfHaveAccount(userName)){
-                System.out.println("The user name entered already exists on our system\n\n");
-                continue;
-            } else if (this.keywords.contains(userName)){
-                System.out.println("You have chosen a reserved word, please enter another user name\n\n");
-                continue;
-            } else {
-                boolean finishedCheckingUserName = false;
-                while (!finishedCheckingUserName) {
-                    System.out.print(String.format("You have entered '%s' as your user name.\nIs this correct? 'Yes' / 'No': ", userName));
-                    String response;
-                    response = TerminalHelper.getInput();
-                    TerminalHelper.flushMacScreen();
+        if (firstName.equals("login")) {
 
-                    if (response.equals("login")) {
-                        return "";
-                    } else if (response.equals("yes") || response.equals("y")) {
-                        finishedCheckingUserName = true;
-                        acceptableUserName = true;
-                    } else if (response.equals("no") || response.equals("n")) {
-                        finishedCheckingUserName = true;
-                        acceptableUserName = false;
-                    } else {
-                        System.out.println("Please enter 'Yes' or 'No', or enter 'login' to return to the login screen\n");
-                        continue;
-                    }
-                }
-            }
+            userLoginQuery();
+
+        } else if (!TerminalHelper.stringIsAlpha(firstName)) {
+
+            System.out.println("Due to current system constraints please only use letters of the English alphabet.");
+            System.out.println("This will be updated soon, our apologies for any inconvenience caused.\n\n");
+
+            getAcceptableFirstName(newAccount);
+
+        } else if (this.keywords.contains(firstName)) {
+
+            System.out.println("You have chosen a reserved word, please try again\n\n");
+
+            getAcceptableFirstName(newAccount);
+
         }
-        return userName;
+
+        newAccount.setFirstName(firstName);
+
+        getAcceptableFirstNameCheck(newAccount);
+        
     }
 
-    private String getAcceptableFirstName(String userName, String lastName, Integer startingBalance){
-        String firstName = new String();
-        boolean acceptableFirstName = false;
+    private void getAcceptableFirstNameCheck(ProtoGuest newAccount) {
 
-        while(!acceptableFirstName){
-            if(!userName.isEmpty()) {
-                System.out.println(String.format("Chosen User Name: %s", userName));
-            }
-            if(!lastName.isEmpty()){
-                System.out.println(String.format("Chosen Last Name: %s", lastName));
-            }
-            if(startingBalance != 0){
-                System.out.println(String.format("Chosen Starting Balance: %d", startingBalance));
-            }
 
-            System.out.print("\nPlease enter your first name, or enter 'login' to cancel new account creation and return to login screen: ");
-            firstName = TerminalHelper.getInput();
-            TerminalHelper.flushMacScreen();
+        String firstName = newAccount.getFirstName();
 
-            if(firstName.equals("login")){
-                return "";
-            }
+        FinalCheckUserCreationResult finalCheck = newAccount.getFinalCheck();
 
-            if(!TerminalHelper.stringIsAlpha(firstName)){
-                System.out.println("Due to current system constraints please only use letters of the English alphabet.");
-                System.out.println("This will be updated soon, our apologies for any inconvenience caused.\n\n");
-                continue;
-            } else if (this.keywords.contains(firstName)){
-                System.out.println("You have chosen a reserved word, please try again\n\n");
-                continue;
+
+        System.out.print(String.format("You have entered '%s' as your first name.\nIs this correct? 'Yes' / 'No': ", firstName));
+
+        String response = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+
+        if (response.equals("login")) {
+
+            userLoginQuery();
+
+        } else if (response.equals("yes") || response.equals("y")) {
+
+            if (!finalCheck.equals(FinalCheckUserCreationResult.NOISSUE)) {
+
+                makeFinalCheckEdit(newAccount);
             }
 
+            getAcceptableLastName(newAccount);
 
+        } else if (response.equals("no") || response.equals("n")) {
 
-            boolean finishedCheckingFirstName = false;
-            while(!finishedCheckingFirstName) {
-                System.out.print(String.format("You have entered '%s' as your first name.\nIs this correct? 'Yes' / 'No': ", firstName));
-                String response = TerminalHelper.getInput();
-                TerminalHelper.flushMacScreen();
+            getAcceptableFirstName(newAccount);
 
+        } else {
 
-                if (response.equals("login")) {
-                    return "";
-                }
+            System.out.println("Please enter 'Yes' or 'No', or enter 'login' to return to the login screen\n");
 
-                if(response.equals("yes") || response.equals("y")){
-                    finishedCheckingFirstName = true;
-                    acceptableFirstName = true;
-                }
+            getAcceptableFirstNameCheck(newAccount);
 
-                if(response.equals("no") || response.equals("n")){
-                    finishedCheckingFirstName = true;
-                    acceptableFirstName = false;
-                }
-
-                if(!finishedCheckingFirstName){
-                    System.out.println("Please enter 'Yes' or 'No', or enter 'login' to return to the login screen\n");
-                    continue;
-                }
-            }
         }
-        return firstName;
     }
 
-    private String getAcceptableLastName(String userName, String firstName, Integer startingBalance) {
-        String lastName = "";
-        boolean acceptableLastName = false;
-
-        while(!acceptableLastName){
-            if(!userName.isEmpty()) {
-                System.out.println(String.format("Chosen User Name: %s", userName));
-            }
-            if(!firstName.isEmpty()){
-                System.out.println(String.format("Chosen First Name: %s", firstName));
-            }
-            if(startingBalance != 0){
-                System.out.println(String.format("Chosen Starting Balance: %d", startingBalance));
-            }
-
-            System.out.print("\nPlease enter your last name, or enter 'login' to return to login screen: ");
-            lastName = TerminalHelper.getInput();
-            TerminalHelper.flushMacScreen();
-
-            if(lastName.equals("login")){
-                return "";
-            }
-
-            if(!TerminalHelper.stringIsAlpha(lastName)){
-                System.out.println("Due to current system constraints please only use letters of the English alphabet.");
-                System.out.println("This will be updated soon, our apologies for any inconvenience caused.\n\n");
-                continue;
-            } else if (this.keywords.contains(lastName)){
-                System.out.println("You have chosen a reserved word, please try again\n\n");
-                continue;
-            }
+    private void getAcceptableLastName(ProtoGuest newAccount) {
 
 
-            boolean finishedCheckingLastName = false;
-            while(!finishedCheckingLastName) {
-                System.out.print(String.format("You have entered '%s' as your last name.\nIs this correct? 'Yes' / 'No': ", lastName));
-                String response = TerminalHelper.getInput();
-                TerminalHelper.flushMacScreen();
+        String userName = newAccount.getUserName();
+        String firstName = newAccount.getFirstName();
+        String lastName;
+        Integer startingBalance = newAccount.getStartingBalance();
 
 
-                if (response.equals("login")) {
-                    return "";
-                }
-
-                if(response.equals("yes") || response.equals("y")){
-                    finishedCheckingLastName = true;
-                    acceptableLastName = true;
-                }
-
-                if(response.equals("no") || response.equals("n")){
-                    finishedCheckingLastName = true;
-                    acceptableLastName = false;
-                }
-
-                if(!finishedCheckingLastName){
-                    System.out.println("Please enter 'Yes' or 'No', or enter 'login' to cancel new account creation and return to the login screen\n");
-                    continue;
-                }
-            }
+        if (!userName.isEmpty()) {
+            System.out.println(String.format("Chosen User Name: %s", userName));
         }
-        return lastName;
-    }
-
-    private Integer getStartingBalance(String userName, String firstName, String lastName) {
-        Integer startingBalance = 0;
-        String startingBalanceAsString = "";
-        boolean acceptableStartingBalance = false;
-
-        while(!acceptableStartingBalance) {
-            if (!userName.isEmpty()) {
-                System.out.println(String.format("Chosen User Name: %s", userName));
-            }
-            if (!firstName.isEmpty()) {
-                System.out.println(String.format("Chosen First Name: %s", firstName));
-            }
-            if (!lastName.isEmpty()) {
-                System.out.println(String.format("Chosen Last Name: %s", lastName));
-            }
-            if (startingBalance != 0) {
-                System.out.println(String.format("Chosen Starting Balance: %d", startingBalance));
-            }
-
-            System.out.print("\nPlease enter a starting balance of full pounds for your account, using only numbers.\n\nOr enter 'login' to cancel the new account creating and return to login screen: ");
-            startingBalanceAsString = TerminalHelper.getInput();
-            TerminalHelper.flushMacScreen();
-            Integer testAmount;
-
-            if(TerminalHelper.stringIsNumeric(startingBalanceAsString)){
-                testAmount = Integer.parseInt(startingBalanceAsString);
-            } else {
-                System.out.println("Please use only whole numbers\n\n");
-                continue;
-            }
-
-            if (startingBalanceAsString.equals("login")) {
-                return null;
-            } else {
-                boolean finishedCheckingStartingBalance = false;
-                while (!finishedCheckingStartingBalance) {
-                    System.out.print(String.format("You have entered £%s as your starting balance.\nIs this correct? 'Yes' / 'No': ", startingBalanceAsString));
-                    String response = TerminalHelper.getInput();
-                    TerminalHelper.flushMacScreen();
-
-
-                    if (response.equals("login")) {
-                        return null;
-                    }
-
-                    if (response.equals("yes") || response.equals("y")) {
-                        finishedCheckingStartingBalance = true;
-                        acceptableStartingBalance = true;
-                    }
-
-                    if (response.equals("no") || response.equals("n")) {
-                        finishedCheckingStartingBalance = true;
-                        acceptableStartingBalance = false;
-                    }
-
-                    if (!finishedCheckingStartingBalance) {
-                        System.out.println("Please enter 'Yes' or 'No', or enter 'login' to cancel new account creation and return to the login screen\n");
-                        continue;
-                    }
-                }
-            }
+        if (!firstName.isEmpty()) {
+            System.out.println(String.format("Chosen First Name: %s", firstName));
         }
-        startingBalance = Integer.parseInt(startingBalanceAsString);
-        return startingBalance;
+        if (startingBalance != 0) {
+            System.out.println(String.format("Chosen Starting Balance: %d", startingBalance));
+        }
+
+
+        System.out.print("\nPlease enter your last name, or enter 'login' to return to login screen: ");
+
+        lastName = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+        if (lastName.equals("login")) {
+
+            userLoginQuery();
+
+        } else if (!TerminalHelper.stringIsAlpha(lastName)) {
+
+            System.out.println("Due to current system constraints please only use letters of the English alphabet.");
+            System.out.println("This will be updated soon, our apologies for any inconvenience caused.\n\n");
+
+            getAcceptableLastName(newAccount);
+
+        } else if (this.keywords.contains(lastName)) {
+
+            System.out.println("You have chosen a reserved word, please try again\n\n");
+
+            getAcceptableLastName(newAccount);
+
+        }
+
+        newAccount.setLastName(lastName);
+
+        getAcceptableLastNameCheck(newAccount);
+
     }
+
+    private void getAcceptableLastNameCheck(ProtoGuest newAccount) {
+
+
+        String lastName = newAccount.getLastName();
+
+        FinalCheckUserCreationResult finalCheck = newAccount.getFinalCheck();
+
+
+        System.out.print(String.format("You have entered '%s' as your last name.\nIs this correct? 'Yes' / 'No': ", lastName));
+
+        String response = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+
+        if (response.equals("login")) {
+
+            userLoginQuery();
+
+        } else if (response.equals("yes") || response.equals("y")) {
+
+            if (!finalCheck.equals(FinalCheckUserCreationResult.NOISSUE)) {
+
+                makeFinalCheckEdit(newAccount);
+            }
+
+            getStartingBalance(newAccount);
+
+        }
+
+        if (response.equals("no") || response.equals("n")) {
+
+            newAccount.setLastName("");
+
+            getAcceptableLastName(newAccount);
+
+        } else {
+
+            System.out.println("Please enter 'Yes' or 'No', or enter 'login' to cancel new account creation and return to the login screen\n");
+
+            getAcceptableLastNameCheck(newAccount);
+
+        }
+    }
+
+    private void getStartingBalance(ProtoGuest newAccount) {
+
+
+        String userName = newAccount.getUserName();
+        String firstName = newAccount.getFirstName();
+        String lastName = newAccount.getLastName();
+
+        String startingBalanceAsString;
+
+
+        if (!userName.isEmpty()) {
+            System.out.println(String.format("Chosen User Name: %s", userName));
+        }
+        if (!firstName.isEmpty()) {
+            System.out.println(String.format("Chosen First Name: %s", firstName));
+        }
+        if (!lastName.isEmpty()) {
+            System.out.println(String.format("Chosen Last Name: %s", lastName));
+        }
+
+
+        System.out.println("\nPlease enter a starting balance of full pounds for your account, using only numbers.\n");
+        System.out.println("Or enter 'login' to cancel the new account creation and return to login screen: ");
+
+        startingBalanceAsString = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+
+        if (!TerminalHelper.stringIsNumeric(startingBalanceAsString)) {
+
+            System.out.println("Please use only whole numbers\n\n");
+
+            getStartingBalance(newAccount);
+
+        } else if (startingBalanceAsString.equals("login")) {
+
+            userLoginQuery();
+
+        }
+
+        Integer startingBalance = Integer.parseInt(startingBalanceAsString);
+
+        newAccount.setStartingBalance(startingBalance);
+
+        getStartingBalanceCheck(newAccount);
+
+    }
+
+    private void getStartingBalanceCheck(ProtoGuest newAccount) {
+
+
+        Integer startingBalance = newAccount.getStartingBalance();
+
+
+        System.out.print(String.format("You have entered £%d as your starting balance.\nIs this correct? 'Yes' / 'No': ", startingBalance));
+
+        String response = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+
+        if (response.equals("login")) {
+
+            userLoginQuery();
+
+        } else if (response.equals("yes") || response.equals("y")) {
+
+            makeFinalCheck(newAccount);
+
+        } else if (response.equals("no") || response.equals("n")) {
+
+            newAccount.setStartingBalance(0);
+
+            getStartingBalance(newAccount);
+
+        } else {
+
+            System.out.println("Please enter 'Yes' or 'No', or enter 'login' to cancel new account creation and return to the login screen\n");
+
+            getStartingBalanceCheck(newAccount);
+
+        }
+    }
+
+    private void makeFinalCheck(ProtoGuest newAccount) {
+
+
+        String userName = newAccount.getUserName();
+        String firstName = newAccount.getFirstName();
+        String lastName = newAccount.getLastName();
+        Integer startingBalance = newAccount.getStartingBalance();
+
+
+        System.out.println(String.format("Chosen User Name: %s", userName));
+        System.out.println(String.format("Chosen First Name: %s", firstName));
+        System.out.println(String.format("Chosen Last Name: %s", lastName));
+        System.out.println(String.format("Chosen Starting Balance: %d", startingBalance));
+
+
+        System.out.println("\nAre all the above fields correct? 'Yes' / 'No', or 'login' to restart from login screen: ");
+
+        String response = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+        if (response.equals("yes") || response.equals("y")) {
+
+            System.out.println(String.format("Payment received from bank account for starting Balance, account wallet credited: $%d.\n", startingBalance));
+
+            System.out.println("Account Created\n");
+
+            this.site.addUser(userName, firstName, lastName, startingBalance);
+
+            Guest activeAccount = this.site.findUserAccount(userName);
+
+            this.site.enterCurrentUser(activeAccount);
+
+        } else if (response.equals("no") || response.equals("n")) {
+
+            makeFinalCheckEdit(newAccount);
+
+        } else if (response.contains("login")) {
+
+            userLoginQuery();
+
+        } else {
+
+            System.out.println("Please enter only 'yes', 'no', or 'login'");
+
+            makeFinalCheck(newAccount);
+
+        }
+    }
+
+    private void makeFinalCheckEdit(ProtoGuest newAccount) {
+
+
+        System.out.println("Please enter the field you wish to change first, or 'login' to restart");
+
+        System.out.println("Enter 'finish' to return to the final step, or 'login' to cancel and return to the login screen");
+
+        System.out.print("['User' name, 'First' name, 'Last' name, Starting 'Balance']: ");
+
+
+        String changeRequired = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
+
+        if (changeRequired.equals("finish")) {
+
+            makeFinalCheck(newAccount);
+
+        } else if (changeRequired.equals("login")) {
+
+            userLoginQuery();
+
+        }
+        if (changeRequired.equals("user") || changeRequired.equals("user name")) {
+
+            newAccount.setFinalCheck(FinalCheckUserCreationResult.USER);
+
+            getAcceptableUserName(newAccount);
+
+        } else if (changeRequired.equals("first") || changeRequired.equals("first name")) {
+
+            newAccount.setFinalCheck(FinalCheckUserCreationResult.FIRST);
+
+            getAcceptableFirstName(newAccount);
+
+        } else if (changeRequired.equals("last") || changeRequired.equals("last name")) {
+
+            newAccount.setFinalCheck(FinalCheckUserCreationResult.LAST);
+
+            getAcceptableLastName(newAccount);
+
+        } else if (changeRequired.equals("balance") || changeRequired.equals("starting balance")) {
+
+            newAccount.setFinalCheck(FinalCheckUserCreationResult.BALANCE);
+
+            getStartingBalance(newAccount);
+
+        } else {
+
+            System.out.println("Please enter only the given options\n");
+
+            makeFinalCheckEdit(newAccount);
+
+        }
+    }
+
 
 }
