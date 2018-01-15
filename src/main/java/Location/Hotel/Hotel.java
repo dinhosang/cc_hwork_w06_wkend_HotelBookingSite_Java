@@ -8,9 +8,7 @@ import Location.HotelRooms.ReservedRooms.ReservedRoom;
 import Location.HotelRooms.RoomType;
 import Location.Location;
 import Person.Guest;
-import Reservation.BookingCalendar;
-import Reservation.ReservationResult;
-import Reservation.RoomReservationDetails;
+import Reservation.*;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -19,12 +17,12 @@ import java.util.*;
 public class Hotel extends Location {
 
     private HashMap<RoomType, ArrayList> rooms;
-    private BookingCalendar calendar;
+    private ArrayList<Booking> bookings;
 
     public Hotel(String name, int foyerCapacity){
         super(name, foyerCapacity);
         createHashMapOfRooms();
-        this.calendar = new BookingCalendar();
+        this.bookings = new ArrayList<>();
     }
 
 
@@ -121,6 +119,7 @@ public class Hotel extends Location {
 
     public ReservationResult receiveReservationRequest(Location room, LocalDate startDate, LocalDate endDate, Guest guestToCharge, String... guests) {
 
+
         long usageLength = ChronoUnit.DAYS.between(startDate, endDate);
 
 
@@ -142,31 +141,76 @@ public class Hotel extends Location {
 
         long cost = usageLength * chosenRoom.getRate();
 
-        ReservationResult resultOfAttemptToReserve = calendar.addReservation(this, chosenRoom, cost, startDate, endDate, guestToCharge, guests);
+        ReservationResult resultOfAttemptToReserve = ReservationSystem.createBooking(this, chosenRoom, cost, startDate, endDate, guestToCharge, guests);
 
 
         if(resultOfAttemptToReserve.equals(ReservationResult.FAILEDALREADYRESERVED)){
             return resultOfAttemptToReserve;
         }
 
-
         chargeGuest(guestToCharge, chosenRoom, usageLength);
 
         return resultOfAttemptToReserve;
     }
 
-
-    public ArrayList<RoomReservationDetails> findReservationsForRoom(ReservedRoom room){
-        return room.getReservationDetails();
+    public void addBooking(Hotel hotel, ReservedRoom room, long cost, LocalDate arrivalDate, LocalDate leaveDate, Guest organiser, ArrayList<String> guestNames){
+        Booking newBooking = new Booking(hotel, room, cost, arrivalDate, leaveDate, organiser, guestNames);
+        this.bookings.add(newBooking);
     }
 
-    public HashMap<RoomType, ArrayList> findAllBookedRoomsDateRange(LocalDate startDate, LocalDate endDate){
-        return calendar.findBookedRoomsDateRange(startDate, endDate);
+    public ArrayList<Booking> getAllBookings() {
+        ArrayList<Booking> copyBookings = this.bookings;
+        return copyBookings;
+    }
+
+    public ArrayList<Booking> findAllBookingsForRoom(ReservedRoom room){
+
+        ArrayList<Booking> roomBookings = new ArrayList<>();
+
+        for (Booking booking: this.bookings){
+            if (booking.getRoom().equals(room)){
+                roomBookings.add(booking);
+            }
+        }
+
+        return roomBookings;
+    }
+
+    public ArrayList<Booking> findBookingsForRoomInDateRange(ReservedRoom room, LocalDate startDate, LocalDate endDate){
+
+        ArrayList<Booking> roomBookings = new ArrayList<>();
+
+        for (Booking booking: this.bookings){
+            if (booking.getRoom().equals(room)){
+                LocalDate arrivalDate = booking.getArrivalDate();
+                LocalDate leaveDate = booking.getLeaveDate();
+                if (arrivalDate.isBefore(endDate) && leaveDate.isAfter(startDate)){
+                    roomBookings.add(booking);
+                }
+            }
+        }
+        return roomBookings;
+    }
+
+    public ArrayList<Booking> findAllBookedRoomsInDateRange(LocalDate startDate, LocalDate endDate) {
+
+        ArrayList<Booking> roomBookingsInRange = new ArrayList<>();
+
+        for (Booking booking: this.bookings){
+            LocalDate arrivalDate = booking.getArrivalDate();
+            LocalDate leaveDate = booking.getLeaveDate();
+            if (arrivalDate.isBefore(endDate) && leaveDate.isAfter(startDate)){
+                roomBookingsInRange.add(booking);
+            }
+        }
+        return roomBookingsInRange;
     }
 
     public HashMap<RoomType, ArrayList> findAllFreeRoomsDateRange(LocalDate startDate, LocalDate endDate){
 
         HashMap<RoomType, ArrayList> freeRooms = new HashMap<>();
+
+        ArrayList<Booking> bookings = this.bookings;
 
         ArrayList<Bedroom> allBedrooms = rooms.get(RoomType.BEDROOM);
         ArrayList<ConferenceRoom> allConferenceRooms = rooms.get(RoomType.CONFERENCEROOM);
@@ -175,37 +219,37 @@ public class Hotel extends Location {
         ArrayList<ConferenceRoom> freeConferenceRooms = new ArrayList<>();
 
         for(Bedroom room: allBedrooms){
-            freeBedrooms.add(room);
-            if(room.getReservationDetails().isEmpty()){
-                continue;
-            } else {
-                ArrayList<RoomReservationDetails> reservationDetails = new ArrayList<>();
-                for(RoomReservationDetails reservation: reservationDetails){
-                    LocalDate reservationStart = reservation.getStartDate();
-                    LocalDate reservationEnd = reservation.getEndDate();
 
-                    if(reservationEnd.isAfter(startDate) && reservationStart.isBefore(endDate)){
-                        freeBedrooms.remove(room);
-                        break;
-                    }
+            freeBedrooms.add(room);
+
+            for(Booking booking: bookings) {
+
+                LocalDate arrivalDate = booking.getArrivalDate();
+                LocalDate leaveDate = booking.getLeaveDate();
+
+                if(arrivalDate.isBefore(endDate) && leaveDate.isAfter(startDate)) {
+
+                    freeBedrooms.remove(room);
+                    break;
+
                 }
             }
         }
 
-        for(ConferenceRoom room: allConferenceRooms){
-            freeConferenceRooms.add(room);
-            if(room.getReservationDetails().isEmpty()){
-                continue;
-            } else {
-                ArrayList<RoomReservationDetails> reservationDetails = new ArrayList<>();
-                for(RoomReservationDetails reservation: reservationDetails){
-                    LocalDate reservationStart = reservation.getStartDate();
-                    LocalDate reservationEnd = reservation.getEndDate();
+        for(ConferenceRoom room: allConferenceRooms) {
 
-                    if(reservationEnd.isAfter(startDate) && reservationStart.isBefore(endDate)){
-                        freeConferenceRooms.remove(room);
-                        break;
-                    }
+            freeConferenceRooms.add(room);
+
+            for(Booking booking: bookings) {
+
+                LocalDate arrivalDate = booking.getArrivalDate();
+                LocalDate leaveDate = booking.getLeaveDate();
+
+                if(arrivalDate.isBefore(endDate) && leaveDate.isAfter(startDate)) {
+
+                    freeConferenceRooms.remove(room);
+                    break;
+
                 }
             }
         }
@@ -216,6 +260,15 @@ public class Hotel extends Location {
         return freeRooms;
     }
 
+    public ArrayList<String> getNameOfGuestsInRoomOnDate(ReservedRoom room, LocalDate date) {
+
+        ArrayList<Booking> arrayOfOneBooking = findBookingsForRoomInDateRange(room, date, date);
+
+        Booking booking = arrayOfOneBooking.get(0);
+        ArrayList<String> guestNames = booking.getGuests();
+
+        return guestNames;
+    }
 
     private void chargeGuest(Guest guest, ReservedRoom room, long usageLength) {
         long rate = room.getRate();

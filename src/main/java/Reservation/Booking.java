@@ -2,9 +2,13 @@ package Reservation;
 
 import Location.Hotel.Hotel;
 import Location.HotelRooms.ReservedRooms.ReservedRoom;
+import Location.HotelRooms.RoomType;
+import Person.Guest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class Booking {
 
@@ -13,13 +17,15 @@ public class Booking {
     private ArrayList<String> guests;
     private LocalDate arrivalDate;
     private LocalDate leaveDate;
+    private Guest organiser;
     private long cost;
 
-    public Booking(Hotel hotel, ReservedRoom room, long cost, LocalDate arrivalDate, LocalDate leaveDate, ArrayList<String> guests){
+    public Booking(Hotel hotel, ReservedRoom room, long cost, LocalDate arrivalDate, LocalDate leaveDate, Guest organiser, ArrayList<String> guests){
         this.hotel = hotel;
         this.room = room;
         this.arrivalDate = arrivalDate;
         this.leaveDate = leaveDate;
+        this.organiser = organiser;
         this.guests = guests;
         this.cost = cost;
     }
@@ -53,4 +59,6 @@ public class Booking {
         long copyCost = this.cost;
         return copyCost;
     }
+
+
 }

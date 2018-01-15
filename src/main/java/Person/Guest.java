@@ -77,8 +77,8 @@ public class Guest {
         return hotel.receiveReservationRequest(room, startDate, endDate, this, guests);
     }
 
-    public void addBooking(Hotel hotel, ReservedRoom room, long cost, LocalDate arrivalDate, LocalDate leaveDate, ArrayList<String> guestNames) {
-        Booking newBooking = new Booking(hotel, room, cost, arrivalDate, leaveDate, guestNames);
+    public void addBooking(Hotel hotel, ReservedRoom room, long cost, LocalDate arrivalDate, LocalDate leaveDate, Guest organiser, ArrayList<String> guestNames) {
+        Booking newBooking = new Booking(hotel, room, cost, arrivalDate, leaveDate, organiser, guestNames);
         this.bookings.add(newBooking);
     }
 

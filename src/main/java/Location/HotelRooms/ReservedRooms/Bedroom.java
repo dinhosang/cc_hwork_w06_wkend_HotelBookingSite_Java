@@ -8,7 +8,7 @@ public class Bedroom extends ReservedRoom {
     }
 
     public String getRoomNumber() {
-        String copyRoomNumber = this.name;
+        String copyRoomNumber = "Room " + this.name;
         return copyRoomNumber;
     }
 

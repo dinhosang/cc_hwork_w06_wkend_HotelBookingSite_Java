@@ -18,7 +18,7 @@ public class BedroomTest {
 
     @Test
     public void canGetBedroomNumber(){
-        assertEquals("3", bedroom.getRoomNumber());
+        assertEquals("Room 3", bedroom.getRoomNumber());
     }
 
     @Test

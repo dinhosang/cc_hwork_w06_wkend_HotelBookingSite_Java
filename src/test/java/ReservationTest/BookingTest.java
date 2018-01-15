@@ -4,6 +4,7 @@ import Location.Hotel.Hotel;
 import Location.HotelRooms.ReservedRooms.BedType;
 import Location.HotelRooms.ReservedRooms.Bedroom;
 import Location.HotelRooms.RoomType;
+import Person.Guest;
 import Reservation.Booking;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,19 +23,21 @@ public class BookingTest {
     private LocalDate arrivalDate;
     private LocalDate leaveDate;
     private ArrayList<String> guests;
+    private Guest organiser;
     private long cost;
     private Booking booking;
 
     @Before
     public void before(){
-        hotel = new Hotel("Testing Hotels", 10);
-        bedroom = new Bedroom("4", BedType.DOUBLE, 5);
-        arrivalDate = LocalDate.of(2017, 12, 29);
-        leaveDate = LocalDate.of(2018, 1, 5);
-        guests = new ArrayList<>(Arrays.asList("Zoe", "Jim"));
-        cost = 100;
+        this.hotel = new Hotel("Testing Hotels", 10);
+        this.bedroom = new Bedroom("4", BedType.DOUBLE, 5);
+        this.arrivalDate = LocalDate.of(2017, 12, 29);
+        this.leaveDate = LocalDate.of(2018, 1, 5);
+        this.organiser = new Guest("Jazz", "Jenny", "Jacobs", 400);
+        this.guests = new ArrayList<>(Arrays.asList("Zoe", "Jim"));
+        this.cost = 100;
 
-        booking = new Booking(hotel, bedroom, cost, arrivalDate, leaveDate, guests);
+        this.booking = new Booking(hotel, bedroom, cost, arrivalDate, leaveDate, organiser, guests);
     }
 
     @Test
