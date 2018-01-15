@@ -1,5 +1,6 @@
 package Location.Hotel;
 
+import Location.Helper.CreateHashMapOfRooms;
 import Location.HotelRooms.DiningRoom;
 import Location.HotelRooms.ReservedRooms.Bedroom;
 import Location.HotelRooms.ReservedRooms.ConferenceRoom;
@@ -9,6 +10,7 @@ import Location.Location;
 import Person.Guest;
 import Reservation.BookingCalendar;
 import Reservation.ReservationResult;
+import Reservation.RoomReservationDetails;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -43,11 +45,23 @@ public class Hotel extends Location {
             // even though class of room must be a subclass of Location
             // as the .getClass() returns the likes of Bedroom etc.
 
-            ArrayList arrayRoomsForType = findCorrectArrayForRoomType(room);
+            if(room instanceof Bedroom){
+                ArrayList<Bedroom> arrayRoomsForType = (ArrayList<Bedroom>) findCorrectArrayForRoomType(room);
+                Bedroom currentRoom = (Bedroom) room;
+                arrayRoomsForType.add(currentRoom);
+                this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
+            } else if (room instanceof ConferenceRoom) {
+                ArrayList<ConferenceRoom> arrayRoomsForType = (ArrayList<ConferenceRoom>) findCorrectArrayForRoomType(room);
+                ConferenceRoom currentRoom = (ConferenceRoom) room;
+                arrayRoomsForType.add(currentRoom);
+                this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
+            } else {
+                ArrayList<DiningRoom> arrayRoomsForType = (ArrayList<DiningRoom>) findCorrectArrayForRoomType(room);
+                DiningRoom currentRoom = (DiningRoom) room;
+                arrayRoomsForType.add(currentRoom);
+                this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
+            }
 
-            arrayRoomsForType.add(room);
-
-            this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
         }
     }
 
@@ -55,10 +69,22 @@ public class Hotel extends Location {
         for(Location room: rooms){
             String roomTypeEnumAsAString = room.getClass().getSimpleName();
 
-            ArrayList arrayRoomsForType = findCorrectArrayForRoomType(room);
-            arrayRoomsForType.remove(room);
-
-            this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
+            if(room instanceof Bedroom){
+                ArrayList<Bedroom> arrayRoomsForType = (ArrayList<Bedroom>) findCorrectArrayForRoomType(room);
+                Bedroom currentRoom = (Bedroom) room;
+                arrayRoomsForType.remove(currentRoom);
+                this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
+            } else if (room instanceof ConferenceRoom) {
+                ArrayList<ConferenceRoom> arrayRoomsForType = (ArrayList<ConferenceRoom>) findCorrectArrayForRoomType(room);
+                ConferenceRoom currentRoom = (ConferenceRoom) room;
+                arrayRoomsForType.remove(currentRoom);
+                this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
+            } else {
+                ArrayList<DiningRoom> arrayRoomsForType = (ArrayList<DiningRoom>) findCorrectArrayForRoomType(room);
+                DiningRoom currentRoom = (DiningRoom) room;
+                arrayRoomsForType.remove(currentRoom);
+                this.rooms.put(RoomType.valueOf(roomTypeEnumAsAString.toUpperCase()), arrayRoomsForType);
+            }
         }
     }
 
@@ -70,11 +96,6 @@ public class Hotel extends Location {
 
         for(Object type: keys){
             numberOfRooms += this.rooms.get(type).size();
-//            if(!this.rooms.get(type).isEmpty()) {
-//                // if statement is need as otherwise it fails
-//                // if the arrayList is empty when trying to get(0)
-//                System.out.println(this.rooms.get(type).get(0).getClass());
-//            }
         }
 
         return numberOfRooms;
@@ -98,7 +119,7 @@ public class Hotel extends Location {
         return this.capacity + roomsCapacity;
     }
 
-    public ReservationResult receiveReservationRequest(Location room, LocalDate startDate, LocalDate endDate, Guest guestToCharge, Guest... guests) {
+    public ReservationResult receiveReservationRequest(Location room, LocalDate startDate, LocalDate endDate, Guest guestToCharge, String... guests) {
 
         long usageLength = ChronoUnit.DAYS.between(startDate, endDate);
 
@@ -119,8 +140,9 @@ public class Hotel extends Location {
             return ReservationResult.FAILEDNOTENOUGHFUNDS;
         }
 
+        long cost = usageLength * chosenRoom.getRate();
 
-        ReservationResult resultOfAttemptToReserve = calendar.addBooking(chosenRoom, startDate, endDate, guests);
+        ReservationResult resultOfAttemptToReserve = calendar.addReservation(this, chosenRoom, cost, startDate, endDate, guestToCharge, guests);
 
 
         if(resultOfAttemptToReserve.equals(ReservationResult.FAILEDALREADYRESERVED)){
@@ -129,9 +151,70 @@ public class Hotel extends Location {
 
 
         chargeGuest(guestToCharge, chosenRoom, usageLength);
+
         return resultOfAttemptToReserve;
     }
 
+
+    public ArrayList<RoomReservationDetails> findReservationsForRoom(ReservedRoom room){
+        return room.getReservationDetails();
+    }
+
+    public HashMap<RoomType, ArrayList> findAllBookedRoomsDateRange(LocalDate startDate, LocalDate endDate){
+        return calendar.findBookedRoomsDateRange(startDate, endDate);
+    }
+
+    public HashMap<RoomType, ArrayList> findAllFreeRoomsDateRange(LocalDate startDate, LocalDate endDate){
+
+        HashMap<RoomType, ArrayList> freeRooms = new HashMap<>();
+
+        ArrayList<Bedroom> allBedrooms = rooms.get(RoomType.BEDROOM);
+        ArrayList<ConferenceRoom> allConferenceRooms = rooms.get(RoomType.CONFERENCEROOM);
+
+        ArrayList<Bedroom> freeBedrooms = new ArrayList<>();
+        ArrayList<ConferenceRoom> freeConferenceRooms = new ArrayList<>();
+
+        for(Bedroom room: allBedrooms){
+            freeBedrooms.add(room);
+            if(room.getReservationDetails().isEmpty()){
+                continue;
+            } else {
+                ArrayList<RoomReservationDetails> reservationDetails = new ArrayList<>();
+                for(RoomReservationDetails reservation: reservationDetails){
+                    LocalDate reservationStart = reservation.getStartDate();
+                    LocalDate reservationEnd = reservation.getEndDate();
+
+                    if(reservationEnd.isAfter(startDate) && reservationStart.isBefore(endDate)){
+                        freeBedrooms.remove(room);
+                        break;
+                    }
+                }
+            }
+        }
+
+        for(ConferenceRoom room: allConferenceRooms){
+            freeConferenceRooms.add(room);
+            if(room.getReservationDetails().isEmpty()){
+                continue;
+            } else {
+                ArrayList<RoomReservationDetails> reservationDetails = new ArrayList<>();
+                for(RoomReservationDetails reservation: reservationDetails){
+                    LocalDate reservationStart = reservation.getStartDate();
+                    LocalDate reservationEnd = reservation.getEndDate();
+
+                    if(reservationEnd.isAfter(startDate) && reservationStart.isBefore(endDate)){
+                        freeConferenceRooms.remove(room);
+                        break;
+                    }
+                }
+            }
+        }
+
+        freeRooms.put(RoomType.BEDROOM, freeBedrooms);
+        freeRooms.put(RoomType.CONFERENCEROOM, freeConferenceRooms);
+
+        return freeRooms;
+    }
 
 
     private void chargeGuest(Guest guest, ReservedRoom room, long usageLength) {
@@ -142,15 +225,10 @@ public class Hotel extends Location {
     }
 
     private void createHashMapOfRooms(){
-        ArrayList<Bedroom> bedrooms = new ArrayList<>();
-        ArrayList<ConferenceRoom> conferenceRooms = new ArrayList<>();
-        ArrayList<DiningRoom> diningRooms = new ArrayList<>();
+        HashMap<RoomType, ArrayList> rooms;
 
-
-        HashMap<RoomType, ArrayList> rooms = new HashMap<>();
-        rooms.put(RoomType.BEDROOM, bedrooms);
-        rooms.put(RoomType.DININGROOM, conferenceRooms);
-        rooms.put(RoomType.CONFERENCEROOM, diningRooms);
+        CreateHashMapOfRooms createHashMapHelper = new CreateHashMapOfRooms();
+        rooms = createHashMapHelper.createRoomHashMap();
 
         this.rooms = rooms;
     }

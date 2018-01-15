@@ -17,9 +17,9 @@ public class LocationTest {
     @Before
     public void before(){
         room = new Location("The Room", 2);
-        guest1 = new Guest("Flavia", 20);
-        guest2 = new Guest("Duncan", 40);
-        guest3 = new Guest("Leira", 80);
+        guest1 = new Guest("Flava","Flavia", "Maury", 20);
+        guest2 = new Guest("DeDe","Duncan", "Jacques", 40);
+        guest3 = new Guest("Lala","Leira", "Woodrow", 80);
     }
 
     @Test

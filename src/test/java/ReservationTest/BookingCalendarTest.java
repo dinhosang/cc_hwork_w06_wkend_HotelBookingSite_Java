@@ -1,24 +1,36 @@
 package ReservationTest;
 
+import Location.Helper.CreateHashMapOfRooms;
+import Location.Hotel.Hotel;
 import Location.HotelRooms.ReservedRooms.BedType;
 import Location.HotelRooms.ReservedRooms.Bedroom;
+import Location.HotelRooms.ReservedRooms.ConferenceRoom;
+import Location.HotelRooms.ReservedRooms.ReservedRoom;
+import Location.HotelRooms.RoomType;
 import Person.Guest;
+import Reservation.Booking;
 import Reservation.BookingCalendar;
 import Reservation.ReservationResult;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class BookingCalendarTest {
 
     private BookingCalendar reservations;
 
-    Guest guest1;
-    Guest guest2;
-    Bedroom bedroom;
+    private Guest guest1;
+    private Guest guest2;
+    private Bedroom bedroom;
+    private ConferenceRoom conferenceRoom;
+    private Hotel hotel;
+    private long cost;
 
     private LocalDate startDateReservation1;
     private LocalDate endDateReservation1;
@@ -27,21 +39,35 @@ public class BookingCalendarTest {
     public void before(){
         reservations = new BookingCalendar();
 
-        guest1 = new Guest("Joanne", 300);
-        guest2 = new Guest("Lyra", 250);
+        guest1 = new Guest("JoJo","Joanne", "Ashcroft", 300);
+        guest2 = new Guest("Liar","Lyra", "Possti", 250);
         bedroom = new Bedroom("4", BedType.DOUBLE, 15);
+
+        hotel = new Hotel("Testing", 10);
+
+        cost = 10;
 
         startDateReservation1 = LocalDate.of(2017,1, 3);
         endDateReservation1 = LocalDate.of(2017, 1, 9);
     }
 
     @Test
-    public void canAddBooking(){
-        // guest to charge is used in a hotel method
-        // check that guest can afford, then run addbooking
-        // the if that returns true, charge guest
-
-        // hotel controls first and third, this BookingCalendar method handles the middle
-        assertEquals(ReservationResult.SUCCESS, reservations.addBooking(bedroom, startDateReservation1, endDateReservation1, guest1, guest2));
+    public void canAddBookingToCalendar(){
+        assertEquals(ReservationResult.SUCCESS, reservations.addReservation(hotel, bedroom, cost, startDateReservation1, endDateReservation1, guest1, guest1.getName(), guest2.getName()));
     }
+
+    @Test
+    public void canFindRoomsBookedOnSpecificDate(){
+        reservations.addReservation(hotel, bedroom, cost, startDateReservation1, endDateReservation1, guest1, guest1.getName(), guest2.getName());
+
+        HashMap<RoomType, ArrayList> bookedRooms = reservations.findBookedRoomsDateRange(startDateReservation1, startDateReservation1);
+
+        assertEquals(true, bookedRooms.containsKey(RoomType.BEDROOM));
+        assertEquals(false, bookedRooms.containsKey(RoomType.DININGROOM));
+        assertEquals(1, bookedRooms.get(RoomType.BEDROOM).size());
+        assertEquals(true, bookedRooms.get(RoomType.CONFERENCEROOM).isEmpty());
+        assertNotEquals(2, bookedRooms.get(RoomType.BEDROOM).size());
+    }
+
+
 }

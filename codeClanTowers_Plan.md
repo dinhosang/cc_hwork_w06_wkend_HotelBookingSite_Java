@@ -4,12 +4,15 @@
 ## Guest
 <!-- -- name [String] -->
 <!-- -- wallet [int] -->
-\--location [Room]
+<!-- -- bookings -->
 
+
+\~~checkCurrentFutureBookings
+\~~checkPastBookings
 <!-- ~~getName() [String] -->
 <!-- ~~getWallet() [int] -->
 <!-- ~~spendMoney(amountSpent) [void] -->
-\~~getLocation() [Room]
+<!-- \~~requestReservation(hotel, room, guests) -->
 
 ## Room
 <!-- -- capacity [int] -->
@@ -42,12 +45,19 @@
 <!-- ~~ addRooms(Location... rooms) -->
 <!-- ~~ removeRooms(Location.. rooms) -->
 
--- roomsReserved [HashMap]
+<!-- -- roomsReserved [HashMap] -->
 
-~~ checkIn(room, numberNight, guests) [void]
-  - test capacity here
-~~ chargeGuest(room, guests)
-~~ checkOut(room, guests) [void]
-~~ findGuestsInRoom(room) [ArrayList<Guest>]
-~~ findGuestsInHotel() [ArrayList<Guest>]
-~~ findEmptyRooms() [ArrayList<Room>]
+<!-- ~~ chargeGuest(room, guests) -->
+<!-- ~~makeReservation -->
+<!-- ~~removeReservation -->
+
+#Booking
+
+<!-- ~~ findBookedRoomsInDateRange(dateStart, dateEnd) -->
+
+<!-- ~~ findBookingsForRoom(room) -->
+
+~~ findOrganiserBookedRoom(HashMap)
+~~ findNameOfGuestsInBookedRoom(HashMap)
+
+~~ findEmptyRoomsInDateRange(Type, DateStart, DateEnd)

@@ -45,8 +45,8 @@ public class HotelTest {
 
         hotel = new Hotel("Code el California", 20);
 
-        guest1 = new Guest("Liara", 100);
-        guest2 = new Guest("Jacob", 85);
+        guest1 = new Guest("Lulu","Liara", "Letta", 100);
+        guest2 = new Guest("Jake","Jacob", "Weers", 85);
 
         startDate = LocalDate.of(2018,6,28);
         endDate = LocalDate.of(2018, 7, 4);
@@ -79,7 +79,7 @@ public class HotelTest {
     public void canReceiveReservationRequestSuccess(){
         hotel.addRooms(bedroom3);
 
-        assertEquals(ReservationResult.SUCCESS, hotel.receiveReservationRequest(bedroom3, startDate, endDate, guest1, guest1, guest2));
+        assertEquals(ReservationResult.SUCCESS, hotel.receiveReservationRequest(bedroom3, startDate, endDate, guest1, guest1.getName(), guest2.getName()));
     }
 
 }
