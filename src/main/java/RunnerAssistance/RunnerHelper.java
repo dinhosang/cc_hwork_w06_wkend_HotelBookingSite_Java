@@ -9,16 +9,25 @@ import java.util.Arrays;
 
 public class RunnerHelper {
 
+
     private Site site;
     private ArrayList<String> keywords;
 
+
     public RunnerHelper(Site site) {
+
         this.site = site;
+
         this.keywords = new ArrayList<>(Arrays.asList("yes", "no", "y", "n", "user", "last", "first", "balance", "user name", "username", "first name", "last name", "starting balance", "login", "finish"));
+
     }
 
+
     public void welcomeScreen() {
+
+
         TerminalHelper.flushMacScreen();
+
 
         System.out.println(String.format("Welcome to %s, the hotel booking site.\n", this.site.getSiteName()));
         System.out.println("This site uses '' around keywords to signify that they can be used as input.");
@@ -26,15 +35,17 @@ public class RunnerHelper {
         System.out.println("At any time you may type 'quit' to leave the site\n\n");
 
         userLoginQuery();
+
     }
 
+    
     private void userLoginQuery() {
 
 
         String userName;
 
 
-        System.out.println("Please enter your username to continue, or type 'new' to create a new account");
+        System.out.println("Please enter your username to continue, or type 'new' to create a new account\n\n");
 
         System.out.println(String.format("\n[Accounts already on System: %s]", site.getUserNamesAsString()));
 
@@ -81,8 +92,8 @@ public class RunnerHelper {
 
         if (!isActiveUser) {
 
-            System.out.println(String.format("The user name '%s' has not been found", userName));
-            System.out.println("Would you like to create a 'new' account, or try to 'login' again?");
+            System.out.println(String.format("The user name '%s' has not been found\n", userName));
+            System.out.println("Would you like to create a 'new' account, or try to 'login' again?\n");
 
             String userChoice = TerminalHelper.getInput();
 
@@ -125,9 +136,11 @@ public class RunnerHelper {
 
     private void mainMenu() {
 
+
         Guest user = this.site.getCurrentUser();
 
         ArrayList<String> allowedOptions = new ArrayList<>(Arrays.asList("1", "account", "2", "booking", "3", "new", "logout"));
+
 
         System.out.println("Main Menu");
         System.out.println("---------\n\n");
@@ -138,32 +151,46 @@ public class RunnerHelper {
         System.out.println("\n\n'Logout' ");
         System.out.println("\n'Quit'\n--------\n\n");
 
+
         String userChoice = TerminalHelper.getInput();
 
+        TerminalHelper.flushMacScreen();
+
+
         if (!allowedOptions.contains(userChoice)) {
-            TerminalHelper.flushMacScreen();
+
             System.out.println("Please select one of the given options\n\n");
+
             mainMenu();
+
         } else if (userChoice.equals("1") || userChoice.equals("account")) {
-            TerminalHelper.flushMacScreen();
+
             viewActiveAccountDetails();
+
         } else if (userChoice.equals("2") || userChoice.equals("booking")) {
-            TerminalHelper.flushMacScreen();
+
             viewActiveAccountBookings();
+
         } else if (userChoice.equals("3") || userChoice.equals("new")) {
-            TerminalHelper.flushMacScreen();
+
 //            makeNewBooking();
+
         } else if (userChoice.equals("logout")) {
-            TerminalHelper.flushMacScreen();
+
             this.site.clearCurrentUser();
+
             userLoginQuery();
+
         }
     }
 
     private void viewActiveAccountBookings() {
+
+
         Guest user = this.site.getCurrentUser();
 
         ArrayList<String> allowedOptions = new ArrayList<>(Arrays.asList("1", "historic", "2", "active", "3", "return", "logout"));
+
 
         System.out.println(String.format("Booking Details - %s\n\n", user.getName()));
         System.out.println("Please select one of the following options:\n");
@@ -173,33 +200,46 @@ public class RunnerHelper {
         System.out.println("\n\n'Logout' ");
         System.out.println("\n'Quit'\n--------\n\n");
 
+
         String userChoice = TerminalHelper.getInput();
 
+        TerminalHelper.flushMacScreen();
+
+
         if (!allowedOptions.contains(userChoice)) {
-            TerminalHelper.flushMacScreen();
+
             System.out.println("Please select one of the given options\n\n");
+
             viewActiveAccountBookings();
+
         } else if (userChoice.equals("1") || userChoice.equals("active")) {
-            TerminalHelper.flushMacScreen();
+
 //            viewActiveAccountActiveBookings();
+
         } else if (userChoice.equals("2") || userChoice.equals("historic")) {
-            TerminalHelper.flushMacScreen();
+
 //            viewActiveAccountHistoricBookings();
+
         } else if (userChoice.equals("3") || userChoice.equals("return")) {
-            TerminalHelper.flushMacScreen();
+
             mainMenu();
+
         } else if (userChoice.equals("logout")) {
-            TerminalHelper.flushMacScreen();
+
             this.site.clearCurrentUser();
+
             userLoginQuery();
+
         }
     }
 
     private void viewActiveAccountDetails() {
 
+
         Guest user = this.site.getCurrentUser();
 
         ArrayList<String> allowedOptions = new ArrayList<>(Arrays.asList("1", "edit", "2", "transfer", "3", "return", "logout"));
+
 
         System.out.println(String.format("Account Details - %s\n\n", user.getName()));
         System.out.println(String.format("User Name: %s", user.getUserName()));
@@ -214,30 +254,44 @@ public class RunnerHelper {
         System.out.println("\n\n'Logout' ");
         System.out.println("\n'Quit'\n--------\n\n");
 
+
         String userChoice = TerminalHelper.getInput();
 
+        TerminalHelper.flushMacScreen();
+
+
         if (!allowedOptions.contains(userChoice)) {
-            TerminalHelper.flushMacScreen();
+
             System.out.println("Please select one of the given options\n\n");
+
             viewActiveAccountDetails();
+
         } else if (userChoice.equals("1") || userChoice.equals("edit")) {
-            TerminalHelper.flushMacScreen();
+
             editActiveAccountDetails();
+
         } else if (userChoice.equals("2") || userChoice.equals("transfer")) {
-            TerminalHelper.flushMacScreen();
+
             addFundsToActiveAccountWallet();
+
         } else if (userChoice.equals("3") || userChoice.equals("return")) {
-            TerminalHelper.flushMacScreen();
+
             mainMenu();
+
         } else if (userChoice.equals("logout")) {
-            TerminalHelper.flushMacScreen();
+
             this.site.clearCurrentUser();
+
             userLoginQuery();
+
         }
     }
 
     private void addFundsToActiveAccountWallet() {
+
+
         Guest user = this.site.getCurrentUser();
+
 
         System.out.println(String.format("Transfer Fund To Wallet - %s\n\n", user.getName()));
         System.out.println(String.format("Wallet Balance: %d", user.getWallet()));
@@ -247,36 +301,50 @@ public class RunnerHelper {
         System.out.println("\n'Quit'\n--------\n\n");
         System.out.print("Please Enter Amount to Transfer: £");
 
+
         String userChoice = TerminalHelper.getInput();
 
-        if (userChoice.equals("1") || userChoice.equals("return")) {
-            TerminalHelper.flushMacScreen();
-            viewActiveAccountDetails();
-        } else if (userChoice.equals("logout")) {
-            TerminalHelper.flushMacScreen();
-            this.site.clearCurrentUser();
-            userLoginQuery();
-        }
+        TerminalHelper.flushMacScreen();
 
-        if (!TerminalHelper.stringIsNumeric(userChoice)) {
-            TerminalHelper.flushMacScreen();
+
+        if (userChoice.equals("1") || userChoice.equals("return")) {
+
+            viewActiveAccountDetails();
+
+        } else if (userChoice.equals("logout")) {
+
+            this.site.clearCurrentUser();
+
+            userLoginQuery();
+
+        } else if (!TerminalHelper.stringIsNumeric(userChoice)) {
+
             System.out.println("Please use only whole numbers");
             System.out.println("-----------------------------\n\n");
+
             addFundsToActiveAccountWallet();
+
         } else {
+
             Long userChoiceLong = Long.parseLong(userChoice);
             user.addMoney(userChoiceLong);
-            TerminalHelper.flushMacScreen();
+
             System.out.println(String.format("Wallet Successfully credited by: £%d\n\n", userChoiceLong));
+
             viewActiveAccountDetails();
+
         }
 
     }
 
     private void editActiveAccountDetails() {
+
+
         Guest user = this.site.getCurrentUser();
 
+
         ArrayList<String> allowedOptions = new ArrayList<>(Arrays.asList("1", "first", "2", "last", "3", "return", "logout"));
+
 
         System.out.println(String.format("Edit Details - %s\n\n", user.getName()));
         System.out.println(String.format("First Name: %s", user.getFirstName()));
@@ -289,30 +357,44 @@ public class RunnerHelper {
         System.out.println("\n\n'Logout' ");
         System.out.println("\n'Quit'\n--------\n\n");
 
+
         String userChoice = TerminalHelper.getInput();
 
+        TerminalHelper.flushMacScreen();
+
+
         if (!allowedOptions.contains(userChoice)) {
-            TerminalHelper.flushMacScreen();
+
             System.out.println("Please select one of the given options\n\n");
+
             viewActiveAccountDetails();
+
         } else if (userChoice.equals("1") || userChoice.equals("first")) {
-            TerminalHelper.flushMacScreen();
+
             editActiveAccountFirstName();
+
         } else if (userChoice.equals("2") || userChoice.equals("last")) {
-            TerminalHelper.flushMacScreen();
+
             editActiveAccountLastName();
+
         } else if (userChoice.equals("3") || userChoice.equals("return")) {
-            TerminalHelper.flushMacScreen();
+
             viewActiveAccountDetails();
+
         } else if (userChoice.equals("logout")) {
-            TerminalHelper.flushMacScreen();
+
             this.site.clearCurrentUser();
+
             userLoginQuery();
+
         }
     }
 
     private void editActiveAccountLastName() {
+
+
         Guest user = this.site.getCurrentUser();
+
 
         System.out.println(String.format("Edit Last Name - %s\n\n", user.getName()));
         System.out.println(String.format("Last Name: %s", user.getLastName()));
@@ -322,32 +404,45 @@ public class RunnerHelper {
         System.out.println("\n'Quit'\n--------\n\n");
         System.out.print("Please Enter New Last Name: ");
 
+
         String userChoice = TerminalHelper.getInput();
 
-        if (userChoice.equals("1") || userChoice.equals("return")) {
-            TerminalHelper.flushMacScreen();
-            editActiveAccountDetails();
-        } else if (userChoice.equals("logout")) {
-            TerminalHelper.flushMacScreen();
-            this.site.clearCurrentUser();
-            userLoginQuery();
-        }
+        TerminalHelper.flushMacScreen();
 
-        if (!TerminalHelper.stringIsAlpha(userChoice)) {
-            TerminalHelper.flushMacScreen();
+
+        if (userChoice.equals("1") || userChoice.equals("return")) {
+
+            editActiveAccountDetails();
+
+        } else if (userChoice.equals("logout")) {
+
+            this.site.clearCurrentUser();
+
+            userLoginQuery();
+
+        } else if (!TerminalHelper.stringIsAlpha(userChoice)) {
+
             System.out.println("Please only use letters of the English alphabet");
             System.out.println("-----------------------------------------------\n\n");
+
             editActiveAccountLastName();
+
         } else {
+
             user.setLastName(userChoice);
-            TerminalHelper.flushMacScreen();
+
             System.out.println(String.format("Last name successfully changed to '%s'\n\n", user.getLastName()));
+
             editActiveAccountDetails();
+
         }
     }
 
     private void editActiveAccountFirstName() {
+
+
         Guest user = this.site.getCurrentUser();
+
 
         System.out.println(String.format("Edit First Name - %s\n\n", user.getName()));
         System.out.println(String.format("First Name: %s", user.getFirstName()));
@@ -357,35 +452,47 @@ public class RunnerHelper {
         System.out.println("\n'Quit'\n--------\n\n");
         System.out.print("Please Enter New First Name: ");
 
+
         String userChoice = TerminalHelper.getInput();
 
-        if (userChoice.equals("1") || userChoice.equals("return")) {
-            TerminalHelper.flushMacScreen();
-            editActiveAccountDetails();
-        } else if (userChoice.equals("logout")) {
-            TerminalHelper.flushMacScreen();
-            this.site.clearCurrentUser();
-            userLoginQuery();
-        }
+        TerminalHelper.flushMacScreen();
 
-        if (!TerminalHelper.stringIsAlpha(userChoice)) {
-            TerminalHelper.flushMacScreen();
+
+        if (userChoice.equals("1") || userChoice.equals("return")) {
+
+            editActiveAccountDetails();
+
+        } else if (userChoice.equals("logout")) {
+
+            this.site.clearCurrentUser();
+
+            userLoginQuery();
+
+        } else if (!TerminalHelper.stringIsAlpha(userChoice)) {
+
             System.out.println("Please only use letters of the English alphabet");
             System.out.println("-----------------------------------------------\n\n");
+
             editActiveAccountFirstName();
+
         } else {
+
             user.setFirstName(userChoice);
-            TerminalHelper.flushMacScreen();
+
             System.out.println(String.format("First name successfully changed to '%s'\n\n", user.getFirstName()));
+
             editActiveAccountDetails();
+
         }
     }
 
     private void getAcceptableUserName(ProtoGuest newAccount) {
 
+
         String firstName = newAccount.getFirstName();
         String lastName = newAccount.getLastName();
         Integer startingBalance = newAccount.getStartingBalance();
+
 
         if (!firstName.isEmpty()) {
             System.out.println(String.format("Chosen First Name: %s", firstName));
@@ -399,11 +506,14 @@ public class RunnerHelper {
             System.out.println(String.format("Chosen Starting Balance: %d\n", startingBalance));
         }
 
+
         System.out.print("Please enter your desired user name, or enter 'login' to cancel new account creation and return to login screen: ");
+
 
         String userChoice = TerminalHelper.getInput();
 
         TerminalHelper.flushMacScreen();
+
 
         if (userChoice.equals("login")) {
 
@@ -508,7 +618,7 @@ public class RunnerHelper {
 
         } else if (!TerminalHelper.stringIsAlpha(firstName)) {
 
-            System.out.println("Due to current system constraints please only use letters of the English alphabet.");
+            System.out.println("Due to current system constraints please only use letters of the English alphabet.\n");
             System.out.println("This will be updated soon, our apologies for any inconvenience caused.\n\n");
 
             getAcceptableFirstName(newAccount);
@@ -600,7 +710,7 @@ public class RunnerHelper {
 
         } else if (!TerminalHelper.stringIsAlpha(lastName)) {
 
-            System.out.println("Due to current system constraints please only use letters of the English alphabet.");
+            System.out.println("Due to current system constraints please only use letters of the English alphabet.\n");
             System.out.println("This will be updated soon, our apologies for any inconvenience caused.\n\n");
 
             getAcceptableLastName(newAccount);
@@ -687,7 +797,7 @@ public class RunnerHelper {
 
 
         System.out.println("\nPlease enter a starting balance of full pounds for your account, using only numbers.\n");
-        System.out.println("Or enter 'login' to cancel the new account creation and return to login screen: ");
+        System.out.print("Or enter 'login' to cancel the new account creation and return to login screen: ");
 
         startingBalanceAsString = TerminalHelper.getInput();
 
