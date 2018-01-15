@@ -29,6 +29,19 @@ public class Site {
         return copyUserAccounts;
     }
 
+    public String getUserNamesAsString(){
+
+        ArrayList<String> allUserNames = new ArrayList<>();
+
+        for (Guest account: this.userAccounts) {
+            allUserNames.add(account.getUserName());
+        }
+
+        String userNamesAsString = String.join(", ", allUserNames);
+
+        return userNamesAsString;
+    }
+
     public Guest findUserAccount(String userName){
         Guest soughtForAccount;
         for(Guest user: this.userAccounts){

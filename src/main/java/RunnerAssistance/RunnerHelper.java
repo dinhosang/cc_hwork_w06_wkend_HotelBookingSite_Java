@@ -33,6 +33,7 @@ public class RunnerHelper {
             loginResult = LoginQueryResult.NOTCOMPLETEDLOGIN;
             while (loginResult.equals(LoginQueryResult.NOTCOMPLETEDLOGIN)) {
                 System.out.println("Please enter your username to continue, or type 'new' to create a new account");
+                System.out.println(String.format("\n[Accounts already on System: %s]", site.getUserNamesAsString()));
                 userName = TerminalHelper.getInput();
                 finalAccountName = userName;
                 TerminalHelper.flushMacScreen();
