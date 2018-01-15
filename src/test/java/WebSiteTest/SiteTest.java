@@ -1,6 +1,5 @@
 package WebSiteTest;
 
-import Person.Guest;
 import WebSite.Site;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,8 +8,8 @@ import static org.junit.Assert.assertEquals;
 
 public class SiteTest {
 
-    Site site;
-    Guest user;
+    private Site site;
+
 
     @Before
     public void before(){

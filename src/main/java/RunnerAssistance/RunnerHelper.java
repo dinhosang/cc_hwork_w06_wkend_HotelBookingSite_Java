@@ -30,36 +30,39 @@ public class RunnerHelper {
 
     private void userLoginQuery() {
 
+
         String userName;
 
+
         System.out.println("Please enter your username to continue, or type 'new' to create a new account");
+
         System.out.println(String.format("\n[Accounts already on System: %s]", site.getUserNamesAsString()));
+
+
         userName = TerminalHelper.getInput();
+
+        TerminalHelper.flushMacScreen();
+
 
         if (TerminalHelper.stringIsEmpty(userName)) {
 
-            TerminalHelper.flushMacScreen();
             System.out.println("Please enter a user name, or type 'new' to create a new account\n\n");
 
             userLoginQuery();
 
         } else if (this.keywords.contains(userName)) {
 
-            TerminalHelper.flushMacScreen();
             System.out.println("You have entered a reserved word, please try another user name\n\n");
 
             userLoginQuery();
 
         } else if (!TerminalHelper.stringIsAlphaNumeric(userName)) {
 
-            TerminalHelper.flushMacScreen();
             System.out.println("Please use only letters of the English alphabet, and whole numbers.\n\n");
 
             userLoginQuery();
 
         } else if (userName.equals("new")) {
-
-            TerminalHelper.flushMacScreen();
 
             ProtoGuest newAccount = new ProtoGuest();
 
@@ -67,8 +70,8 @@ public class RunnerHelper {
 
         }
 
-        TerminalHelper.flushMacScreen();
         checkActiveUser(userName);
+
     }
 
     private void checkActiveUser(String userName) {
@@ -89,7 +92,7 @@ public class RunnerHelper {
 
                 ProtoGuest newAccount = new ProtoGuest();
 
-                newAccount.setUserName(userChoice);
+                newAccount.setUserName(userName);
 
                 getAcceptableUserNameCheck(newAccount);
 
@@ -103,13 +106,14 @@ public class RunnerHelper {
 
                 TerminalHelper.flushMacScreen();
 
-                System.out.println("Please enter 'new' to create a new account, or 'login' to try again");
+                System.out.println("Please enter 'new' to create a new account, or 'login' to try again\n\n");
 
                 checkActiveUser(userName);
             }
         } else {
 
             activeAccount = this.site.findUserAccount(userName);
+
             this.site.enterCurrentUser(activeAccount);
 
             TerminalHelper.flushMacScreen();
@@ -417,7 +421,7 @@ public class RunnerHelper {
 
             getAcceptableUserName(newAccount);
 
-        } else if (this.keywords.contains(userChoice)) {
+        } else if (this.keywords.contains(userChoice) || userChoice.equals("new")) {
 
             System.out.println("You have chosen a reserved word, please enter another user name\n\n");
 
@@ -426,7 +430,9 @@ public class RunnerHelper {
         }
 
         newAccount.setUserName(userChoice);
+
         getAcceptableUserNameCheck(newAccount);
+
     }
 
     private void getAcceptableUserNameCheck(ProtoGuest newAccount) {
@@ -518,7 +524,7 @@ public class RunnerHelper {
         newAccount.setFirstName(firstName);
 
         getAcceptableFirstNameCheck(newAccount);
-        
+
     }
 
     private void getAcceptableFirstNameCheck(ProtoGuest newAccount) {
@@ -666,6 +672,7 @@ public class RunnerHelper {
         String lastName = newAccount.getLastName();
 
         String startingBalanceAsString;
+        Integer startingBalance;
 
 
         if (!userName.isEmpty()) {
@@ -699,7 +706,7 @@ public class RunnerHelper {
 
         }
 
-        Integer startingBalance = Integer.parseInt(startingBalanceAsString);
+        startingBalance = Integer.valueOf(startingBalanceAsString);
 
         newAccount.setStartingBalance(startingBalance);
 
@@ -711,6 +718,8 @@ public class RunnerHelper {
 
 
         Integer startingBalance = newAccount.getStartingBalance();
+
+        FinalCheckUserCreationResult finalCheck = newAccount.getFinalCheck();
 
 
         System.out.print(String.format("You have entered £%d as your starting balance.\nIs this correct? 'Yes' / 'No': ", startingBalance));
@@ -725,6 +734,11 @@ public class RunnerHelper {
             userLoginQuery();
 
         } else if (response.equals("yes") || response.equals("y")) {
+
+            if (!finalCheck.equals(FinalCheckUserCreationResult.NOISSUE)) {
+
+                makeFinalCheckEdit(newAccount);
+            }
 
             makeFinalCheck(newAccount);
 
@@ -776,6 +790,8 @@ public class RunnerHelper {
 
             this.site.enterCurrentUser(activeAccount);
 
+            mainMenu();
+
         } else if (response.equals("no") || response.equals("n")) {
 
             makeFinalCheckEdit(newAccount);
@@ -796,9 +812,12 @@ public class RunnerHelper {
     private void makeFinalCheckEdit(ProtoGuest newAccount) {
 
 
-        System.out.println("Please enter the field you wish to change first, or 'login' to restart");
+        newAccount.setFinalCheck(FinalCheckUserCreationResult.NOISSUE);
 
-        System.out.println("Enter 'finish' to return to the final step, or 'login' to cancel and return to the login screen");
+
+        System.out.println("Please enter the field you wish to change first, or 'login' to restart\n");
+
+        System.out.println("Enter 'finish' to return to the final step, or 'login' to cancel and return to the login screen\n");
 
         System.out.print("['User' name, 'First' name, 'Last' name, Starting 'Balance']: ");
 
@@ -816,8 +835,7 @@ public class RunnerHelper {
 
             userLoginQuery();
 
-        }
-        if (changeRequired.equals("user") || changeRequired.equals("user name")) {
+        } else if (changeRequired.equals("user") || changeRequired.equals("user name")) {
 
             newAccount.setFinalCheck(FinalCheckUserCreationResult.USER);
 
