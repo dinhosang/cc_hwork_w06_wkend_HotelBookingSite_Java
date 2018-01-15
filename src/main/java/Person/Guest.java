@@ -20,8 +20,8 @@ public class Guest {
 
     public Guest(String userName, String firstName, String lastName, int wallet){
         this.userName = userName;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        setFirstName(firstName);
+        setLastName(lastName);
         this.wallet = wallet;
         this.bookings = new ArrayList<>();
     }
@@ -35,6 +35,16 @@ public class Guest {
     public String getName() {
         String copyName = String.format("%s %s", this.firstName, this.lastName);
         return copyName;
+    }
+
+    public String getFirstName() {
+        String copyFirstName = this.firstName;
+        return copyFirstName;
+    }
+
+    public String getLastName() {
+        String copyLastName = this.lastName;
+        return copyLastName;
     }
 
     public void setFirstName(String firstName){
@@ -91,27 +101,17 @@ public class Guest {
         return historicBookings;
     }
 
-    public ArrayList<Booking> getCurrentFutureBookings(){
+    public ArrayList<Booking> getCurrentAndFutureBookings(){
         LocalDate timeNow = LocalDate.now();
 
-        ArrayList<Booking> currentFutureBookings = new ArrayList<>();
+        ArrayList<Booking> currentAndFutureBookings = new ArrayList<>();
         for(Booking booking: this.bookings){
             LocalDate endDateOfBooking = booking.getLeaveDate();
             if(!timeNow.isBefore(endDateOfBooking)){
                 continue;
             }
-            currentFutureBookings.add(booking);
+            currentAndFutureBookings.add(booking);
         }
-        return currentFutureBookings;
-    }
-
-    public String getFirstName() {
-        String copyFirstName = this.firstName;
-        return copyFirstName;
-    }
-
-    public String getLastName() {
-        String copyLastName = this.lastName;
-        return copyLastName;
+        return currentAndFutureBookings;
     }
 }
